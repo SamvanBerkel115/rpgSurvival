@@ -1,0 +1,5 @@
+name: RPG_Survival
+version: 1.5.2
+author: Sam van Berkel
+description: This is RPG Survival
+main: sam.berkel.rpgSurvival.Main

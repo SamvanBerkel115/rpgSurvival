@@ -1,0 +1,29 @@
+{
+    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
+    "display": {
+        "title": {
+            "text": "Level 5"
+        },
+        "description": {
+            "text": "Unlocks the ability to use a stone pickaxe"
+        },
+        "icon": {
+            "item": "minecraft:stone_pickaxe"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": false,
+        "hidden": false
+    },
+    "criteria": {
+        "LevelReached": {
+            "trigger": "minecraft:item_durability_changed"
+        }
+    },
+    "requirements": [
+        [
+            "LevelReached"
+        ]
+    ],
+    "parent": "skills:mining/root"
+}

@@ -1,0 +1,29 @@
+{
+    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
+    "display": {
+        "title": {
+            "text": "Level 10"
+        },
+        "description": {
+            "text": "Unlocks the ability to use an iron pickaxe"
+        },
+        "icon": {
+            "item": "minecraft:iron_pickaxe"
+        },
+        "frame": "task",
+        "show_toast": true,
+        "announce_to_chat": false,
+        "hidden": false
+    },
+    "criteria": {
+        "LevelReached": {
+            "trigger": "minecraft:changed_dimension"
+        }
+    },
+    "requirements": [
+        [
+            "LevelReached"
+        ]
+    ],
+    "parent": "skills:woodcutting/level5"
+}
