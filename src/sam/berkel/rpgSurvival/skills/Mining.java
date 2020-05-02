@@ -1,6 +1,9 @@
 package sam.berkel.rpgSurvival.skills;
 
 import org.bukkit.block.Block;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -13,18 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 public class Mining {
-    private Plugin plugin = Main.getPlugin(Main.class);
-
-    public Mining() {
-
-    }
-
     // Checks if a given tool should give mining xp.
     public static boolean isMiningTool(ItemStack item) {
         Plugin plugin = Main.getPlugin(Main.class);
 
         String tool = item.getType().toString();
-        return plugin.getConfig().getConfigurationSection("Leveling.tools.mining").contains(tool);
+        List<String> miningTools = plugin.getConfig().getStringList("Leveling.tools.mining");
+
+        return miningTools.contains(tool);
     }
 
     public static void brokeBlock(User user, Block block) {

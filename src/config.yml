@@ -12,7 +12,41 @@ Leveling:
       GRANITE: 15
       DIORITE: 15
     woodcutting:
-      LOG: 10
+      LOG: 1000
+    excavation:
+      GRASS: 1000
+      DIRT: 10
+      SAND: 15
+      GRAVEL: 20
+    combat:
+      Blaze: 2
+      Creeper: 1.5
+      Drowned: 1
+      Elder_Guardian: 5
+      Endermite: 1
+      Evoker: 1
+      Ghast: 3
+      Guardian: 5
+      Husk: 1
+      Magma_Cube: 1
+      Phantom: 2
+      Pillager: 1
+      Ravager: 2.5
+      Shulker: 1
+      Silverfish: 2
+      Skeleton: 1
+      Skeleton_Horseman: 2
+      Spider_Jockey: 2
+      Slime: 1
+      Stray: 2
+      Vex: 2
+      Vindicator: 1
+      Witch: 2
+      Wither_Skeleton: 2
+      Zombie: 200
+      Zombie_Villager: 1
+      Ender_Dragon: 8
+      Whither: 10
   tools:
     mining:
       - 'WOOD_PICKAXE'
@@ -22,3 +56,7 @@ Leveling:
       - 'WOOD_AXE'
       - 'STONE_AXE'
       - 'IRON_AXE'
+    excavation:
+      - 'WOOD_SPADE'
+      - 'SONE_SPADE'
+      - 'IRON_SPADE'

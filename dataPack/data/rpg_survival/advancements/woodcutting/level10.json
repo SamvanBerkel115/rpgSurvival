@@ -25,5 +25,5 @@
             "LevelReached"
         ]
     ],
-    "parent": "skills:combat/level5"
+    "parent": "rpg_survival:woodcutting/level5"
 }

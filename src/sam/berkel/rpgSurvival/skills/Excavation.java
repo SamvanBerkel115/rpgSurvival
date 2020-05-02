@@ -9,14 +9,15 @@ import sam.berkel.rpgSurvival.model.User;
 
 import java.util.List;
 
-public class Woodcutting {
+public class Excavation {
     // Checks if a given tool should give mining xp.
-    public static boolean isWoodcuttingTool(ItemStack item) {
+    public static boolean isExcavationTool(ItemStack item) {
         Plugin plugin = Main.getPlugin(Main.class);
 
         String tool = item.getType().toString();
-        List<String> woodcuttingTools = plugin.getConfig().getStringList("Leveling.tools.woodcutting");
-        return woodcuttingTools.contains(tool);
+        List<String> excavationTools = plugin.getConfig().getStringList("Leveling.tools.excavation");
+
+        return excavationTools.contains(tool);
     }
 
     public static void brokeBlock(User user, Block block) {
@@ -24,11 +25,11 @@ public class Woodcutting {
         ItemStack tool = user.getPlayer().getInventory().getItemInMainHand();
         user.getPlayer().sendMessage("You used" + tool.getType().toString());
 
-        if (isWoodcuttingTool(tool)) {
+        if (isExcavationTool(tool)) {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
-            user.addXp(gainedXp, "Woodcutting");
+            user.addXp(gainedXp, "Excavation");
         }
     }
 
@@ -37,13 +38,13 @@ public class Woodcutting {
         Plugin plugin = Main.getPlugin(Main.class);
 
         String type = block.getType().toString();
-        plugin.getConfig().getConfigurationSection("Leveling.xp.woodcutting").contains(type);
+        plugin.getConfig().getConfigurationSection("Leveling.xp.excavation").contains(type);
 
-        if ( plugin.getConfig().getConfigurationSection("Leveling.xp.woodcutting").contains(type) ) {
-            System.out.println("The block " + type + "Gives: " + plugin.getConfig().getInt("Leveling.xp.woodcutting." + type));
-            return plugin.getConfig().getInt("Leveling.xp.woodcutting." + type);
+        if ( plugin.getConfig().getConfigurationSection("Leveling.xp.excavation").contains(type) ) {
+            System.out.println("The block " + type + "Gives: " + plugin.getConfig().getInt("Leveling.xp.excavation." + type));
+            return plugin.getConfig().getInt("Leveling.xp.excavation." + type);
         } else {
-            System.out.println("The block " + type + "Gives no woodcutting xp ");
+            System.out.println("The block " + type + "Gives no excavation xp ");
             return 0;
         }
     }

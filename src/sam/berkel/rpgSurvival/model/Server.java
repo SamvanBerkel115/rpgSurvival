@@ -14,7 +14,6 @@ public final class Server {
     private static Server instance = null;
 
     private Map<String, User> users;
-    private Mining mining;
     private Plugin plugin = Main.getPlugin(Main.class);
     private double base;
     private double exponent;
@@ -22,7 +21,6 @@ public final class Server {
     // private constructor restricted to this class itself
     private Server() {
         users = new HashMap<>();
-        mining = new Mining();
 
         base = plugin.getConfig().getDouble("Leveling.formula.base");
         exponent = plugin.getConfig().getDouble("Leveling.formula.exponent");
@@ -51,10 +49,6 @@ public final class Server {
 
     public User getUser(UUID uuid) {
         return users.get(uuid.toString());
-    }
-
-    public Mining getMining() {
-        return mining;
     }
 
     public Set<String> getUserKeys() {
