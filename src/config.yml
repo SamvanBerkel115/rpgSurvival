@@ -1,0 +1,24 @@
+Users:
+
+Leveling:
+  formula:
+    base: 1000
+    exponent: 1.05
+  xp:
+    mining:
+      STONE: 1000
+      SANDSTONE: 10
+      ANDESITE: 15
+      GRANITE: 15
+      DIORITE: 15
+    woodcutting:
+      LOG: 10
+  tools:
+    mining:
+      - 'WOOD_PICKAXE'
+      - 'STONE_PICKAXE'
+      - 'IRON_PICKAXE'
+    woodcutting:
+      - 'WOOD_AXE'
+      - 'STONE_AXE'
+      - 'IRON_AXE'

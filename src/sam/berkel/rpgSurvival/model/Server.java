@@ -1,19 +1,31 @@
 package sam.berkel.rpgSurvival.model;
 
-import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.skills.Mining;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public final class Server {
     // static variable single_instance of type Singleton
     private static Server instance = null;
 
     private Map<String, User> users;
+    private Mining mining;
+    private Plugin plugin = Main.getPlugin(Main.class);
+    private double base;
+    private double exponent;
 
     // private constructor restricted to this class itself
     private Server() {
         users = new HashMap<>();
+        mining = new Mining();
+
+        base = plugin.getConfig().getDouble("Leveling.formula.base");
+        exponent = plugin.getConfig().getDouble("Leveling.formula.exponent");
     };
 
     // static method to create instance of Singleton class
@@ -25,7 +37,27 @@ public final class Server {
         return instance;
     }
 
-    public void playerJoined(Player player) {
-        users.put(player.getDisplayName(), new User(player));
+    public double getBase() {
+        return base;
+    }
+
+    public double getExponent() {
+        return exponent;
+    }
+
+    public void userJoined(User user) {
+        users.put(user.getUniqueId().toString(), user);
+    }
+
+    public User getUser(UUID uuid) {
+        return users.get(uuid.toString());
+    }
+
+    public Mining getMining() {
+        return mining;
+    }
+
+    public Set<String> getUserKeys() {
+        return users.keySet();
     }
 }
