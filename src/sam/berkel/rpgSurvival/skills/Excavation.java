@@ -7,6 +7,7 @@ import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
 import sam.berkel.rpgSurvival.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Excavation {
@@ -47,5 +48,18 @@ public class Excavation {
             System.out.println("The block " + type + "Gives no excavation xp ");
             return 0;
         }
+    }
+
+    public static ArrayList<String> getBlockedItems (int level) {
+        ArrayList<String> blockedItems = new ArrayList<>();
+
+        if (level < 5) {
+            blockedItems.add("STONE_SPADE");
+        }
+        if (level < 10) {
+            blockedItems.add("IRON_SPADE");
+        }
+
+        return blockedItems;
     }
 }

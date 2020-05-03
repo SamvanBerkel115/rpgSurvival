@@ -7,6 +7,7 @@ import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
 import sam.berkel.rpgSurvival.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Woodcutting {
@@ -46,5 +47,26 @@ public class Woodcutting {
             System.out.println("The block " + type + "Gives no woodcutting xp ");
             return 0;
         }
+    }
+
+    public static ArrayList<String> getBlockedItems (int level) {
+        ArrayList<String> blockedItems = new ArrayList<>();
+
+        if (level < 5) {
+            blockedItems.add("STONE_AXE");
+        }
+        if (level < 10) {
+            blockedItems.add("IRON_AXE");
+        }
+
+        if (level < 20) {
+            blockedItems.add("GOLD_AXE");
+        }
+
+        if (level < 30) {
+            blockedItems.add("DIAMOND_AXE");
+        }
+
+        return blockedItems;
     }
 }

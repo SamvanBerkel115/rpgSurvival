@@ -11,6 +11,7 @@ import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
 import sam.berkel.rpgSurvival.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -53,5 +54,18 @@ public class Mining {
             System.out.println("The block " + type + "Gives no mining xp ");
             return 0;
         }
+    }
+
+    public static ArrayList<String> getBlockedItems (int level) {
+        ArrayList<String> blockedItems = new ArrayList<>();
+
+        if (level < 5) {
+            blockedItems.add("STONE_PICKAXE");
+        }
+        if (level < 10) {
+            blockedItems.add("IRON_PICKAXE");
+        }
+
+        return blockedItems;
     }
 }

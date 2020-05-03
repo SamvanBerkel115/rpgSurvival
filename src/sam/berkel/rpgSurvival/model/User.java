@@ -11,6 +11,10 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.skills.Combat;
+import sam.berkel.rpgSurvival.skills.Excavation;
+import sam.berkel.rpgSurvival.skills.Mining;
+import sam.berkel.rpgSurvival.skills.Woodcutting;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -26,25 +30,29 @@ public class User {
     private int excavationLvl;
     private int combatXp;
     private int combatLvl;
+    private int fishingXp;
+    private int fishingLvl;
     private HashMap<String, String> lockedItems;
 
-    public User(Player player, int miningXp, int miningLvl, int woodcuttingXp, int woodcuttingLvl, int excavationXp, int excavationLvl, int combatXp, int combatLvl) {
+    public User(Player player, int combatXp, int combatLvl, int excavationXp, int excavationLvl, int fishingXp, int fishingLvl, int miningXp, int miningLvl, int woodcuttingXp, int woodcuttingLvl) {
         System.out.println("Added new user" + player.getDisplayName());
         this.player = player;
+        this.combatXp = combatXp;
+        this.combatLvl = combatLvl;
+        this.excavationXp = excavationXp;
+        this.excavationLvl = excavationLvl;
+        this.fishingLvl = fishingLvl;
+        this.fishingXp = fishingXp;
         this.miningXp = miningXp;
         this.miningLvl = miningLvl;
         this.woodcuttingXp = woodcuttingXp;
         this.woodcuttingLvl = woodcuttingLvl;
-        this.excavationXp = excavationXp;
-        this.excavationLvl = excavationLvl;
-        this.combatXp = combatXp;
-        this.combatLvl = combatLvl;
 
         initScoreboard();
-        updateScoreboard(miningLvl, woodcuttingLvl, excavationLvl, combatLvl);
+        updateScoreboard(combatLvl, excavationLvl, fishingLvl, miningLvl, woodcuttingLvl);
 
         lockedItems = new HashMap<>();
-        lockedItems.put("IRON_PICKAXE", "mining");
+        initLockedItems();
     }
 
     public String getDisplayName() {
@@ -137,6 +145,38 @@ public class User {
         return miningXp;
     }
 
+    public int getWoodcuttingXp() {
+        return woodcuttingXp;
+    }
+
+    public int getWoodcuttingLvl() {
+        return woodcuttingLvl;
+    }
+
+    public int getExcavationXp() {
+        return excavationXp;
+    }
+
+    public int getExcavationLvl() {
+        return excavationLvl;
+    }
+
+    public int getCombatXp() {
+        return combatXp;
+    }
+
+    public int getCombatLvl() {
+        return combatLvl;
+    }
+
+    public int getFishingXp() {
+        return fishingXp;
+    }
+
+    public int getFishingLvl() {
+        return fishingLvl;
+    }
+
     public String toolIsLockedBy(ItemStack tool) {
         String toolType = tool.getType().toString();
 
@@ -177,16 +217,35 @@ public class User {
         Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.DARK_AQUA + "Levels");
         levelObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(scoreboard);
-        updateScoreboard(miningLvl, woodcuttingLvl, excavationLvl, combatLvl);
+        updateScoreboard(combatLvl, excavationLvl, fishingLvl, miningLvl, woodcuttingLvl);
     }
 
-    public void updateScoreboard(int miningLvl, int fishingLvl, int excavationLvl, int combatLvl) {
-        scoreboard.getObjective("levels").getScore("Mining").setScore(miningLvl);
-        scoreboard.getObjective("levels").getScore("Woodcutting").setScore(fishingLvl);
-        scoreboard.getObjective("levels").getScore("Excavation").setScore(excavationLvl);
+    public void updateScoreboard(int combatLvl, int excavationLvl, int fishingLvl, int miningLvl, int woodcuttingLvl) {
         scoreboard.getObjective("levels").getScore("Combat").setScore(combatLvl);
+        scoreboard.getObjective("levels").getScore("Excavation").setScore(excavationLvl);
+        scoreboard.getObjective("levels").getScore("Fishing").setScore(fishingLvl);
+        scoreboard.getObjective("levels").getScore("Mining").setScore(miningLvl);
+        scoreboard.getObjective("levels").getScore("Woodcutting").setScore(woodcuttingLvl);
 
         Score questPoints = scoreboard.getObjective("levels").getScore(ChatColor.AQUA + "Quest Points: " + ChatColor.WHITE + "0");
         questPoints.setScore(0);
+    }
+
+    public void initLockedItems() {
+        for (String item : Combat.getBlockedItems(combatLvl)) {
+            lockedItems.put(item, "combat");
+        }
+
+        for (String item : Excavation.getBlockedItems(excavationLvl)) {
+            lockedItems.put(item, "excavation");
+        }
+
+        for (String item : Mining.getBlockedItems(miningLvl)) {
+            lockedItems.put(item, "mining");
+        }
+
+        for (String item : Woodcutting.getBlockedItems(woodcuttingLvl)) {
+            lockedItems.put(item, "woodcutting");
+        }
     }
 }
