@@ -87,6 +87,11 @@ public class User {
                 currentXp = excavationXp;
                 currentLvl = excavationLvl;
                 break;
+            case "Fishing":
+                fishingXp += xp;
+                currentXp = fishingXp;
+                currentLvl = fishingLvl;
+                break;
             case "Combat":
                 combatXp += xp;
                 currentXp = combatXp;
@@ -116,6 +121,10 @@ public class User {
                 case "Excavation":
                     excavationLvl++;
                     grantAdvancement("excavation/level" + excavationLvl);
+                    break;
+                case "Fishing":
+                    fishingLvl++;
+                    grantAdvancement("fishing/level" + fishingLvl);
                     break;
                 case "Combat":
                     combatLvl++;

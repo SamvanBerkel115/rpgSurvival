@@ -24,7 +24,7 @@ public class Fishing {
     }
 
     public static boolean isLarge(int level) {
-        if ( Math.random() > 0) {
+        if ( Math.random() > 0.9) {
             return true;
         } else {
             return false;
@@ -44,8 +44,7 @@ public class Fishing {
 
             // Give the fish a different name and weight if the fish is large.
             if (Fishing.isLarge(user.getFishingLvl())) {
-                String fishName = caughtItem.getItemStack().getItemMeta().getDisplayName();
-                itemMeta.setDisplayName(ChatColor.GOLD + "Large " + fishName);
+                itemMeta.setDisplayName(ChatColor.GOLD + "Large " + caughtMat.toString().toLowerCase());
 
                 fishWeight =  2 * fishWeight;
             }

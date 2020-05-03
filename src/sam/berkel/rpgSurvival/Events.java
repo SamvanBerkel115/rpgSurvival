@@ -12,10 +12,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -92,6 +95,52 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+
+    }
+
+    // Inventory events
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+
+        System.out.println(event.getRawSlot());
+
+        // Open the main menu.
+        if (event.getRawSlot() == 36) {
+            event.setCancelled(true);
+            System.out.println("Player clicked menu");
+            InventoryMenu.openMainMenu(player);
+        }
+
+        // Check if a menu is open and handle the click if true.
+        if (player.getOpenInventory().getTitle().substring(0, 2).equals(ChatColor.DARK_RED.toString())) {
+            event.setCancelled(true);
+
+            InventoryMenu.handleClick(event);
+        }
+    }
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event) {
+        String droppedItemName = event.getItemDrop().getItemStack().getItemMeta().getDisplayName();
+
+        System.out.println(droppedItemName);
+        System.out.println(ChatColor.GOLD + "Menu");
+        if (droppedItemName.equals(ChatColor.GOLD + "Menu")) {
+            System.out.println("Dropped menu");
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        Player player = (Player) event.getPlayer();
+
+    }
+
+    // Event that handle players joining and leaving.
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         User user;
@@ -132,6 +181,18 @@ public class Events implements Listener {
         }
 
         Server.getInstance().userJoined(user);
+
+        placeMenuButton(player);
+    }
+
+    public void placeMenuButton(Player player) {
+        ItemStack menubutton = new ItemStack(Material.WRITABLE_BOOK, 1);
+
+        ItemMeta menuMeta = menubutton.getItemMeta();
+        menuMeta.setDisplayName(ChatColor.GOLD + "Menu");
+        menubutton.setItemMeta(menuMeta);
+
+        player.getInventory().setItem(0, menubutton);
     }
 
     @EventHandler
