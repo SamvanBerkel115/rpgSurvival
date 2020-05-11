@@ -128,31 +128,6 @@ public final class Server {
         }
 
         users.put(user.getUniqueId().toString(), user);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Plugin plugin = Main.getPlugin(Main.class);
-                Server server = Server.getInstance();
-
-                for (Player player : plugin.getServer().getOnlinePlayers()) {
-                    User user = server.getUser(player.getUniqueId());
-
-                    for (PointOfInterest poi : server.getPOIs()) {
-                        if ( poi.isWithinRadius(player) ) {
-                            if ( !user.getCurrentPoi().equals(poi.getName()) ) {
-                                user.setCurrentPoi(poi.getName());
-                                player.sendTitle("", "You entered: " + poi.getName(), 10, 30, 10);
-                            }
-                        } else {
-                            if ( user.getCurrentPoi().equals(poi.getName()) ) {
-                                player.sendTitle("", "You left: " + poi.getName(), 10, 30, 10);
-                            }
-                        }
-                    }
-                }
-            }
-        }.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 60);
     }
 
     public User getUser(UUID uuid) {

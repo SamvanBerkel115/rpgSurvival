@@ -6,6 +6,7 @@ import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
 import sam.berkel.rpgSurvival.enchantments.Test;
+import sam.berkel.rpgSurvival.model.POIRunnable;
 
 import java.lang.reflect.Field;
 
@@ -23,8 +24,8 @@ public class Main extends JavaPlugin {
         // Add custom items and crafting recipes.
         CustomRecipes.addAll();
 
-        // Add commands
-        this.getCommand("kit").setExecutor(new Commands());
+        // Performs the check if players have exited or entered the radius of a POI.
+        new POIRunnable().runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 60);
     }
 
     public void loadConfig() {

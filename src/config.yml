@@ -68,8 +68,8 @@ Leveling:
       - 'DIAMOND_SHOVEL'
 
 Locations:
-  City:
-    Radius: 100
+  city:
+    radius: 100
     x: 0
     y: 0
     z: 0
