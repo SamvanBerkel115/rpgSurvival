@@ -8,7 +8,7 @@
             "text": "The mining skill"
         },
         "icon": {
-            "item": "minecraft:wooden_pickaxe"
+            "item": "minecraft:stone_pickaxe"
         },
         "frame": "task",
         "show_toast": false,

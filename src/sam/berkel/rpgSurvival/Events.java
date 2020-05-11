@@ -42,10 +42,6 @@ public class Events implements Listener {
         Mining.brokeBlock(user, brokenBlock);
         Woodcutting.brokeBlock(user, brokenBlock);
         Excavation.brokeBlock(user, brokenBlock);
-
-        ItemStack tool = player.getInventory().getItemInMainHand();
-        player.sendMessage("You used" + tool.getType().toString());
-        player.sendMessage("You broke" + brokenBlock.getType().toString() + "using " + tool.getType().toString());
     }
 
     @EventHandler
@@ -72,14 +68,17 @@ public class Events implements Listener {
         }
 
         if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-            if(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "Wand")) {
-                Magic.castSpell(player);
+            if (player.getInventory().getItemInMainHand() != null) {
+                if(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "Wand")) {
+                    Magic.castSpell(player);
+                }
             }
         }
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        System.out.println(event.getCause().toString());
         if (event.getDamager() instanceof Player) {
             Player damager = (Player) event.getDamager();
             Entity target = event.getEntity();
@@ -87,7 +86,13 @@ public class Events implements Listener {
             int xp = (int) event.getDamage() * Combat.getXpMultiplier(target);
 
             User damagerUser = Server.getInstance().getUser(damager.getUniqueId());
-            damagerUser.addXp(xp, "Combat");
+
+            if (damagerUser.hasDamageSpellHit()) {
+                damagerUser.addXp(xp, Main.Skill.MAGIC);
+            } else {
+                damagerUser.addXp(xp, Main.Skill.COMBAT);
+            }
+
 
             damager.sendMessage(damager.getDisplayName() + " did " + event.getDamage() + "to " + target.getName());
         }
@@ -112,11 +117,16 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+    }
+
+    @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         Player player = (Player) event.getWhoClicked();
         User user = Server.getInstance().getUser(player.getUniqueId());
 
-        user.addXp(1000, "Crafting");
+        user.addXp(1000, Main.Skill.CRAFTING);
     }
 
     @EventHandler
@@ -129,14 +139,12 @@ public class Events implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
-        // The current item is null when an item is placed in an inventory.
+        System.out.println(event.getCurrentItem().getType().toString());
+
         if (event.getCurrentItem() != null) {
             // Open the main menu.
             if (event.getRawSlot() == 36 && event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Menu")) {
                 event.setCancelled(true);
-
-                // Make sure the current item is not lost
-                player.getInventory().addItem(event.getCurrentItem());
 
                 InventoryMenu.openMainMenu(player);
             }
@@ -145,16 +153,14 @@ public class Events implements Listener {
             if (player.getOpenInventory().getTitle().substring(0, 2).equals(ChatColor.DARK_RED.toString())) {
                 event.setCancelled(true);
 
-                // Make sure the current item is not lost
-                player.getInventory().addItem(event.getCurrentItem());
-
                 InventoryMenu.handleClick(event);
             }
         }
 
         if (player.getOpenInventory().getTitle().equals("Furnace") && event.getAction().toString().split("_")[0].equals("PICKUP_ALL")) {
             User user = Server.getInstance().getUser(player.getUniqueId());
-            user.addXp(1000, "Crafting");
+            user.addXp(1000, Main.Skill.CRAFTING
+            );
         }
     }
 
@@ -177,70 +183,7 @@ public class Events implements Listener {
     // Event that handle players joining and leaving.
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        User user;
-
-        if ( plugin.getConfig().contains("Users." + player.getUniqueId()) ) {
-            System.out.println("An existing user joined");
-
-            int combatLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".combatLvl").toString());
-            int combatXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".combatXp").toString());
-            int craftingLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".combatLvl").toString());
-            int craftingXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".combatXp").toString());
-            int excavationLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".excavationLvl").toString());
-            int excavationXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".excavationXp").toString());
-            int farmingLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".fishingLvl").toString());
-            int farmingXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".fishingXp").toString());
-            int fishingLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".fishingLvl").toString());
-            int fishingXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".fishingXp").toString());
-            int magicLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".magicLvl").toString());
-            int magicXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".magicXp").toString());
-            int miningLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".miningLvl").toString());
-            int miningXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".miningXp").toString());
-            int woodcuttingLvl = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".woodcuttingLvl").toString());
-            int woodcuttingXp = Integer.parseInt(plugin.getConfig().get("Users." + player.getUniqueId() +".woodcuttingXp").toString());
-
-            user = new User(player, combatXp, combatLvl, craftingXp, craftingLvl, excavationXp, excavationLvl, farmingXp, farmingLvl, fishingXp, fishingLvl, magicXp, magicLvl, miningXp, miningLvl, woodcuttingXp, woodcuttingLvl);
-        } else {
-            System.out.println("A new user joined");
-            plugin.getConfig().getStringList("Users").add(player.getUniqueId().toString());
-
-            plugin.getConfig().set("Users." + player.getUniqueId() +".combatLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".combatXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".craftingLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".craftingXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".excavationLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".excavationXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".farmingLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".farmingXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".magicLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".magicXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".miningLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".miningXp", "0");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingLvl", "1");
-            plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingXp", "0");
-
-            plugin.saveConfig();
-
-            user = new User(player, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
-        }
-
-        Server.getInstance().userJoined(user);
-
-        placeMenuButton(player);
-        Magic.giveWand(player);
-    }
-
-    public void placeMenuButton(Player player) {
-        ItemStack menubutton = new ItemStack(Material.WRITABLE_BOOK, 1);
-
-        ItemMeta menuMeta = menubutton.getItemMeta();
-        menuMeta.setDisplayName(ChatColor.GOLD + "Menu");
-        menubutton.setItemMeta(menuMeta);
-
-        player.getInventory().setItem(0, menubutton);
+        Server.getInstance().userJoined(event.getPlayer());
     }
 
     @EventHandler

@@ -18,6 +18,8 @@ public class Excavation {
         String tool = item.getType().toString();
         List<String> excavationTools = plugin.getConfig().getStringList("Leveling.tools.excavation");
 
+        System.out.println(excavationTools);
+
         return excavationTools.contains(tool);
     }
 
@@ -30,7 +32,7 @@ public class Excavation {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
-            user.addXp(gainedXp, "Excavation");
+            user.addXp(gainedXp, Main.Skill.EXCAVATION);
         }
     }
 

@@ -14,7 +14,7 @@ Leveling:
     woodcutting:
       LOG: 1000
     excavation:
-      GRASS: 1000
+      GRASS_BLOCK: 1000
       DIRT: 10
       SAND: 15
       GRAVEL: 20
@@ -52,11 +52,24 @@ Leveling:
       - 'WOOD_PICKAXE'
       - 'STONE_PICKAXE'
       - 'IRON_PICKAXE'
+      - 'GOLD_AXE'
+      - 'DIAMOND_AXE'
     woodcutting:
       - 'WOOD_AXE'
       - 'STONE_AXE'
       - 'IRON_AXE'
+      - 'GOLD_AXE'
+      - 'DIAMOND_AXE'
     excavation:
-      - 'WOOD_SPADE'
-      - 'SONE_SPADE'
-      - 'IRON_SPADE'
+      - 'WOOD_SHOVEL'
+      - 'STONE_SHOVEL'
+      - 'IRON_SHOVEL'
+      - 'GOLD_SHOVEl'
+      - 'DIAMOND_SHOVEL'
+
+Locations:
+  City:
+    Radius: 100
+    x: 0
+    y: 0
+    z: 0

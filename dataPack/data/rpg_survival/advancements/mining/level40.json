@@ -1,0 +1,28 @@
+{
+  "display": {
+    "title": {
+      "text": "Level 40"
+    },
+    "description": {
+      "text": "Unlocks the ability to use a diamond pickaxe."
+    },
+    "icon": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "LevelReached": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "requirements": [
+    [
+      "LevelReached"
+    ]
+  ],
+  "parent": "rpg_survival:mining/level20"
+}

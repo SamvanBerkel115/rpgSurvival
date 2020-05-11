@@ -1,11 +1,10 @@
 {
-    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
     "display": {
         "title": {
             "text": "Level 10"
         },
         "description": {
-            "text": "Unlocks the ability to use an iron pickaxe"
+            "text": "Unlocks the ability to use an iron pickaxe."
         },
         "icon": {
             "item": "minecraft:iron_pickaxe"
@@ -17,7 +16,7 @@
     },
     "criteria": {
         "LevelReached": {
-            "trigger": "minecraft:changed_dimension"
+            "trigger": "minecraft:impossible"
         }
     },
     "requirements": [
@@ -25,5 +24,5 @@
             "LevelReached"
         ]
     ],
-    "parent": "rpg_survival:mining/level5"
+    "parent": "rpg_survival:mining/root"
 }

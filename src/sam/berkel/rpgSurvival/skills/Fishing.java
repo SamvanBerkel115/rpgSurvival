@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
+import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.User;
 
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class Fishing {
                 fishWeight =  2 * fishWeight;
             }
 
-            user.addXp((int) (700 * fishWeight), "Fishing");
+            user.addXp((int) (700 * fishWeight), Main.Skill.FISHING);
 
             itemMeta.setLore(Arrays.asList(ChatColor.GRAY + "Weight: " + fishWeight));
             caughtItem.getItemStack().setItemMeta(itemMeta);

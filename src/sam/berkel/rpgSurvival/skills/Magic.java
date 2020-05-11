@@ -23,7 +23,7 @@ public class Magic {
         User user = Server.getInstance().getUser(player.getUniqueId());
         String spell = user.getActiveSpell();
 
-        user.addXp(1000, "magic");
+        user.addXp(1000, Main.Skill.MAGIC);
 
         switch(spell) {
             case "fireBolt":

@@ -36,7 +36,7 @@ public class Mining {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
-            user.addXp(gainedXp, "Mining");
+            user.addXp(gainedXp, Main.Skill.MINING);
         }
     }
 

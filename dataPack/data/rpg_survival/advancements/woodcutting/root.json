@@ -8,7 +8,7 @@
             "text": "The woodcutting skill"
         },
         "icon": {
-            "item": "minecraft:wooden_axe"
+            "item": "minecraft:stone_axe"
         },
         "frame": "task",
         "show_toast": false,

@@ -1,0 +1,29 @@
+{
+  "display": {
+    "title": {
+      "text": "Magic",
+      "color": "gold"
+    },
+    "description": {
+      "text": "The magic skill"
+    },
+    "icon": {
+      "item": "minecraft:stick"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Tick": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "Tick"
+    ]
+  ]
+}

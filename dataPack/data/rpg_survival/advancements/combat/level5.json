@@ -1,14 +1,13 @@
 {
-    "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
     "display": {
         "title": {
             "text": "Level 5"
         },
         "description": {
-            "text": "Unlocks the ability to use a stone pickaxe"
+            "text": "Unlocks the ability to use a gold sword."
         },
         "icon": {
-            "item": "minecraft:stone_pickaxe"
+            "item": "minecraft:golden_sword"
         },
         "frame": "task",
         "show_toast": true,
@@ -17,7 +16,7 @@
     },
     "criteria": {
         "LevelReached": {
-            "trigger": "minecraft:item_durability_changed"
+            "trigger": "minecraft:impossible"
         }
     },
     "requirements": [

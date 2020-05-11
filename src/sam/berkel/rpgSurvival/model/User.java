@@ -39,7 +39,9 @@ public class User {
     private int fishingXp;
     private int fishingLvl;
     private HashMap<String, String> lockedItems;
+    private String currentPoi;
     private String activeSpell;
+    private boolean damageSpellHit;
 
     public User(Player player,
                 int combatXp, int combatLvl, int craftingXp, int craftingLvl, int excavationXp, int excavationLvl, int farmingXp, int farmingLvl,
@@ -63,6 +65,8 @@ public class User {
         this.woodcuttingXp = woodcuttingXp;
         this.woodcuttingLvl = woodcuttingLvl;
 
+        this.currentPoi = "";
+
         initScoreboard();
         updateScoreboard(combatLvl, craftingLvl, excavationLvl, farmingLvl, fishingLvl, magicLvl, miningLvl, woodcuttingLvl);
 
@@ -70,6 +74,7 @@ public class User {
         initLockedItems();
 
         activeSpell = "fireBolt";
+        damageSpellHit = false;
     }
 
     public String getDisplayName() {
@@ -84,47 +89,48 @@ public class User {
         return player;
     }
 
-    public void addXp(int xp, String skill) {
+    public void addXp(int xp, Main.Skill skill) {
+        System.out.println("Adding " + xp + " to " + skill);
         int currentXp;
         int currentLvl;
 
         switch (skill) {
-            case "Combat":
+            case COMBAT:
                 combatXp += xp;
                 currentXp = combatXp;
                 currentLvl = combatLvl;
                 break;
-            case "Crafting":
+            case CRAFTING:
                 craftingXp += xp;
                 currentXp = craftingXp;
                 currentLvl = craftingLvl;
                 break;
-            case "Excavation":
+            case EXCAVATION:
                 excavationXp += xp;
                 currentXp = excavationXp;
                 currentLvl = excavationLvl;
                 break;
-            case "Farming":
+            case FARMING:
                 farmingXp += xp;
                 currentXp = farmingXp;
                 currentLvl = farmingLvl;
                 break;
-            case "Fishing":
+            case FISHING:
                 fishingXp += xp;
                 currentXp = fishingXp;
                 currentLvl = fishingLvl;
                 break;
-            case "Magic":
+            case MAGIC:
                 magicXp += xp;
                 currentXp = magicXp;
                 currentLvl = magicLvl;
                 break;
-            case "Mining":
+            case MINING:
                 miningXp += xp;
                 currentXp = miningXp;
                 currentLvl = miningLvl;
                 break;
-            case "Woodcutting":
+            case WOODCUTTING:
                 woodcuttingXp += xp;
                 currentXp = woodcuttingXp;
                 currentLvl = woodcuttingLvl;
@@ -144,35 +150,35 @@ public class User {
         int xpForNextLevel = (int) (base * (1 - Math.pow(exponent, currentLvl)) / (1 - exponent));
         if (currentXp >= xpForNextLevel) {
             switch (skill) {
-                case "Combat":
+                case COMBAT:
                     combatLvl++;
                     grantAdvancement("combat/level" + combatLvl);
                     break;
-                case "Crafting":
+                case CRAFTING:
                     craftingLvl++;
                     grantAdvancement("crafting/level" + craftingLvl);
                     break;
-                case "Excavation":
+                case EXCAVATION:
                     excavationLvl++;
                     grantAdvancement("excavation/level" + excavationLvl);
                     break;
-                case "Farming":
+                case FARMING:
                     farmingLvl++;
                     grantAdvancement("farming/level" + farmingLvl);
                     break;
-                case "Fishing":
+                case FISHING:
                     fishingLvl++;
                     grantAdvancement("fishing/level" + fishingLvl);
                     break;
-                case "Magic":
+                case MAGIC:
                     magicLvl++;
                     grantAdvancement("magic/level" + magicLvl);
                     break;
-                case "Mining":
+                case MINING:
                     miningLvl++;
                     grantAdvancement("mining/level" + miningLvl);
                     break;
-                case "Woodcutting":
+                case WOODCUTTING:
                     woodcuttingLvl++;
                     grantAdvancement("woodcutting/level" + woodcuttingLvl);
                     break;
@@ -183,14 +189,11 @@ public class User {
             }
             currentLvl++;
 
-            Score skillScore = scoreboard.getObjective("levels").getScore(ChatColor.GRAY + skill);
+            Score skillScore = scoreboard.getObjective("levels").getScore(ChatColor.GRAY + skill.toString());
             skillScore.setScore(currentLvl);
 
             showLevelUpNotification(skill, currentLvl);
         }
-
-        System.out.println("Total xp: " + currentXp);
-        System.out.println("Xp for next level: " + xpForNextLevel);
     }
 
     public int getCombatXp() {
@@ -258,6 +261,18 @@ public class User {
 
     public String getActiveSpell() {return activeSpell;}
 
+    public String getCurrentPoi() {
+        return currentPoi;
+    }
+
+    public void setCurrentPoi(String currentPoi) {
+        this.currentPoi = currentPoi;
+    }
+
+    public boolean hasDamageSpellHit() {
+        return damageSpellHit;
+    }
+
     public void setActiveSpell(String activeSpell) {this.activeSpell = activeSpell;}
 
     public String toolIsLockedBy(ItemStack tool) {
@@ -283,8 +298,8 @@ public class User {
         }
     }
 
-    public void showLevelUpNotification(String skill, int level) {
-        player.sendTitle("", "Your " + skill + " level is now: " + ChatColor.DARK_AQUA + level, 10, 40, 20);
+    public void showLevelUpNotification(Main.Skill skill, int level) {
+        player.sendTitle("", "Your " + skill.toString() + " level is now: " + ChatColor.DARK_AQUA + level, 10, 40, 20);
 
         Location playerLoc = player.getLocation();
         Firework fw = (Firework) playerLoc.getWorld().spawnEntity(playerLoc, EntityType.FIREWORK);
@@ -300,7 +315,7 @@ public class User {
     public void initScoreboard() {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         scoreboard = manager.getNewScoreboard();
-        Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.DARK_AQUA + "Levels");
+        Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.DARK_RED + "Levels");
         levelObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(scoreboard);
         updateScoreboard(combatLvl, craftingLvl, excavationLvl, farmingLvl, fishingLvl, magicLvl, miningLvl, woodcuttingLvl);
