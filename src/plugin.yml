@@ -4,3 +4,20 @@ api-version: 1.13
 author: Sam van Berkel
 description: This is RPG Survival
 main: sam.berkel.rpgSurvival.Main
+
+commands:
+  cutScene:
+    description: This is a demo command.
+    usage: /<cutscene> recordPath [duration] [name]
+    permission: rpg.cutScene
+    permission-message: You don't have <permission>
+  poi:
+    description: Create or remove points of interest.
+    usage: /<cutscene> recordPath [duration] [name]
+    permission: rpg.cutScene
+    permission-message: You don't have <permission>
+  citizen:
+    description: Create or remove citizen.
+    usage: /<cutscene> recordPath [duration] [name]
+    permission: rpg.cutScene
+    permission-message: You don't have <permission>

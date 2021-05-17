@@ -3,6 +3,8 @@ package sam.berkel.rpgSurvival.model;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -11,10 +13,8 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 import sam.berkel.rpgSurvival.Main;
-import sam.berkel.rpgSurvival.skills.Combat;
-import sam.berkel.rpgSurvival.skills.Excavation;
-import sam.berkel.rpgSurvival.skills.Mining;
-import sam.berkel.rpgSurvival.skills.Woodcutting;
+import sam.berkel.rpgSurvival.model.citizen.Citizen;
+import sam.berkel.rpgSurvival.skills.*;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -42,6 +42,9 @@ public class User {
     private String currentPoi;
     private String activeSpell;
     private boolean damageSpellHit;
+    private boolean isInCutscene;
+    private Entity dialogueCitizen;
+    private Block teleportBlock;
 
     public User(Player player,
                 int combatXp, int combatLvl, int craftingXp, int craftingLvl, int excavationXp, int excavationLvl, int farmingXp, int farmingLvl,
@@ -54,8 +57,8 @@ public class User {
         this.craftingLvl = craftingLvl;
         this.excavationXp = excavationXp;
         this.excavationLvl = excavationLvl;
-        this.farmingLvl = fishingLvl;
-        this.farmingXp = fishingXp;
+        this.farmingLvl = farmingLvl;
+        this.farmingXp = farmingXp;
         this.fishingLvl = fishingLvl;
         this.fishingXp = fishingXp;
         this.magicXp = magicXp;
@@ -64,6 +67,8 @@ public class User {
         this.miningLvl = miningLvl;
         this.woodcuttingXp = woodcuttingXp;
         this.woodcuttingLvl = woodcuttingLvl;
+
+        System.out.println(player.getUniqueId());
 
         this.currentPoi = "";
 
@@ -75,6 +80,7 @@ public class User {
 
         activeSpell = "fireBolt";
         damageSpellHit = false;
+        isInCutscene = false;
     }
 
     public String getDisplayName() {
@@ -157,6 +163,7 @@ public class User {
                 case CRAFTING:
                     craftingLvl++;
                     grantAdvancement("crafting/level" + craftingLvl);
+                    grantAdvancement("crafting/recipe" + craftingLvl);
                     break;
                 case EXCAVATION:
                     excavationLvl++;
@@ -189,10 +196,12 @@ public class User {
             }
             currentLvl++;
 
-            Score skillScore = scoreboard.getObjective("levels").getScore(ChatColor.GRAY + skill.toString());
+            Score skillScore = scoreboard.getObjective("levels").getScore(ChatColor.WHITE + skill.toString());
             skillScore.setScore(currentLvl);
 
             showLevelUpNotification(skill, currentLvl);
+
+            initLockedItems();
         }
     }
 
@@ -269,6 +278,34 @@ public class User {
         this.currentPoi = currentPoi;
     }
 
+    public void removeCurrentPoi() {
+        currentPoi = null;
+    }
+
+    public Entity getDialogueCitizen() {
+        return dialogueCitizen;
+    }
+
+    public void setDialogueCitizen(Entity citizen) {
+        dialogueCitizen = citizen;
+    }
+
+    public boolean isInCutscene() {
+        return isInCutscene;
+    }
+
+    public void setInCutscene(boolean inCutscene) {
+        isInCutscene = inCutscene;
+    }
+
+    public Block getTeleportBlock() {
+        return teleportBlock;
+    }
+
+    public void setTeleportBlock(Block teleportBlock) {
+        this.teleportBlock = teleportBlock;
+    }
+
     public boolean hasDamageSpellHit() {
         return damageSpellHit;
     }
@@ -276,9 +313,6 @@ public class User {
     public void setActiveSpell(String activeSpell) {this.activeSpell = activeSpell;}
 
     public String toolIsLockedBy(ItemStack tool) {
-        System.out.println(tool.getItemMeta().getDisplayName());
-        System.out.println(tool.getType());
-        System.out.println(lockedItems);
         String toolType = tool.getType().toString();
 
         if ( lockedItems.containsKey(toolType) ) {
@@ -315,24 +349,26 @@ public class User {
     public void initScoreboard() {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         scoreboard = manager.getNewScoreboard();
-        Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.DARK_RED + "Levels");
+        Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.GOLD + "Levels");
         levelObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
         player.setScoreboard(scoreboard);
         updateScoreboard(combatLvl, craftingLvl, excavationLvl, farmingLvl, fishingLvl, magicLvl, miningLvl, woodcuttingLvl);
     }
 
     public void updateScoreboard(int combatLvl, int craftingLvl, int excavationLvl, int farmingLvl, int fishingLvl, int magicLvl, int miningLvl, int woodcuttingLvl) {
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Combat").setScore(combatLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Crafting").setScore(craftingLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Excavation").setScore(excavationLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Farming").setScore(farmingLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Fishing").setScore(fishingLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Magic").setScore(magicLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Mining").setScore(miningLvl);
-        scoreboard.getObjective("levels").getScore(ChatColor.GRAY + "Woodcutting").setScore(woodcuttingLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Combat").setScore(combatLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Crafting").setScore(craftingLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Excavation").setScore(excavationLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Farming").setScore(farmingLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Fishing").setScore(fishingLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Magic").setScore(magicLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Mining").setScore(miningLvl);
+        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Woodcutting").setScore(woodcuttingLvl);
     }
 
     public void initLockedItems() {
+        lockedItems = new HashMap<>();
+
         for (String item : Combat.getBlockedItems(combatLvl)) {
             lockedItems.put(item, "combat");
         }

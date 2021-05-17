@@ -1,9 +1,8 @@
 package sam.berkel.rpgSurvival.model;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class PointOfInterest {
     private String name;
@@ -24,8 +23,8 @@ public class PointOfInterest {
         return name;
     }
 
-    public double calculateDistance(Player player) {
-        Location loc = player.getLocation();
+    public double calculateDistance(Entity entity) {
+        Location loc = entity.getLocation();
         double locX = loc.getX();
         double locY = loc.getY();
         double locZ = loc.getZ();
@@ -35,8 +34,8 @@ public class PointOfInterest {
     }
 
     // Check if a player is within the radius of a poi.
-    public boolean isWithinRadius(Player player) {
-        if (this.calculateDistance(player) <= radius) {
+    public boolean isWithinRadius(Entity entity) {
+        if (this.calculateDistance(entity) <= radius) {
             return true;
         } else {
             return false;

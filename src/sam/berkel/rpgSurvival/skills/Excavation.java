@@ -26,13 +26,14 @@ public class Excavation {
     public static void brokeBlock(User user, Block block) {
         Server server = Server.getInstance();
         ItemStack tool = user.getPlayer().getInventory().getItemInMainHand();
-        user.getPlayer().sendMessage("You used" + tool.getType().toString());
 
         if (isExcavationTool(tool)) {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
             user.addXp(gainedXp, Main.Skill.EXCAVATION);
+
+            System.out.println("Gained " + gainedXp + " excavation xp.");
         }
     }
 
@@ -60,6 +61,15 @@ public class Excavation {
         }
         if (level < 10) {
             blockedItems.add("IRON_SPADE");
+        }
+        if (level < 15) {
+            blockedItems.add("GOLD_SPADE");
+        }
+        if (level < 20) {
+            blockedItems.add("DIAMOND_SPADE");
+        }
+        if (level < 30) {
+            blockedItems.add("NETHERITE_SPADE");
         }
 
         return blockedItems;

@@ -30,13 +30,14 @@ public class Mining {
     public static void brokeBlock(User user, Block block) {
         Server server = Server.getInstance();
         ItemStack tool = user.getPlayer().getInventory().getItemInMainHand();
-        user.getPlayer().sendMessage("You used" + tool.getType().toString());
 
         if (isMiningTool(tool)) {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
             user.addXp(gainedXp, Main.Skill.MINING);
+
+            System.out.println("Gained " + gainedXp + " mining xp.");
         }
     }
 
@@ -64,6 +65,15 @@ public class Mining {
         }
         if (level < 10) {
             blockedItems.add("IRON_PICKAXE");
+        }
+        if (level < 15) {
+            blockedItems.add("GOLD_PICKAXE");
+        }
+        if (level < 20) {
+            blockedItems.add("DIAMOND_PICKAXE");
+        }
+        if (level < 30) {
+            blockedItems.add("NETHERITE_PICKAXE");
         }
 
         return blockedItems;

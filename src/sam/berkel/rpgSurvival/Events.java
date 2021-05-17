@@ -1,37 +1,73 @@
 package sam.berkel.rpgSurvival;
 
-import org.bukkit.Bukkit;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
+import sam.berkel.rpgSurvival.model.PointOfInterest;
+import sam.berkel.rpgSurvival.model.citizen.CheckLeftRunnable;
+import sam.berkel.rpgSurvival.model.citizen.Citizen;
+import sam.berkel.rpgSurvival.model.CutScene;
 import sam.berkel.rpgSurvival.model.Server;
 import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.citizen.Response;
+import sam.berkel.rpgSurvival.model.citizen.State;
+import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
 import sam.berkel.rpgSurvival.skills.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Events implements Listener {
     private Plugin plugin = Main.getPlugin(Main.class);
+    private Server server = Server.getInstance();
 
+    // Block events
+
+    /**
+     *
+     * @param event
+     */
+    @EventHandler
+    public  void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getBlock().getType() == Material.WHEAT) {
+            Player player = event.getPlayer();
+            User user = server.getUser(player.getUniqueId());
+
+            user.addXp(20, Main.Skill.FARMING);
+        }
+
+        ItemStack itemInHand = event.getItemInHand();
+        if (itemInHand.hasItemMeta() && itemInHand.getItemMeta().hasCustomModelData()) {
+            System.out.println("This item has a meta");
+
+            ItemMeta itemInHandMeta = itemInHand.getItemMeta();
+            if (itemInHandMeta.getCustomModelData() == 938124) {
+                System.out.println("You just placed a teleport block.");
+            }
+        }
+
+        System.out.println("Player placed block: " + event.getItemInHand().getType());
+    }
+
+    /**
+     * Add the right mining, woodcutting or excavation xp whenever the player breaks a block
+     * @param event
+     */
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         Server server = Server.getInstance();
@@ -42,91 +78,264 @@ public class Events implements Listener {
         Mining.brokeBlock(user, brokenBlock);
         Woodcutting.brokeBlock(user, brokenBlock);
         Excavation.brokeBlock(user, brokenBlock);
+        Farming.brokeBlock(user, brokenBlock);
     }
 
+    // Player events
+
+    /**
+     * If the player is interacting with a block, check if the player is allowed to use the tool that he is interacting with.
+     * @param event
+     */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.hasBlock()) {
-            User user = Server.getInstance().getUser(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
 
-            String lockedBy = user.toolIsLockedBy(event.getItem());
-            if (lockedBy.equals("none")) {
-                System.out.println("Tool is unlocked");
-            } else {
-                System.out.println("Tool " + event.getItem().toString() + " is locked");
-                user.getPlayer().sendMessage("Your " + lockedBy + " level is too low to use this item");
+        if (event.hasBlock()) {
+            User user = server.getUser(player.getUniqueId());
+
+            ItemStack tool = event.getItem();
+
+            if (tool != null) {
+                String lockedBy = user.toolIsLockedBy(tool);
+                if (!lockedBy.equals("none")) {
+                    player.sendMessage("Your " + lockedBy + " level is too low to use this item");
+                    event.setCancelled(true);
+                }
+            }
+
+            if (TeleportBlock.isTeleportBlock(event.getClickedBlock())) {
+                InventoryMenu.openTeleportMenu(player);
+
                 event.setCancelled(true);
             }
         }
 
-        Player player = event.getPlayer();
-
         if (event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "Wand")) {
-                InventoryMenu.openSpellMenu(player);
+            ItemStack itemInHand = player.getInventory().getItemInMainHand();
+
+            if (itemInHand != null) {
+                ItemMeta itemMeta = itemInHand.getItemMeta();
+
+                if (itemMeta != null && itemMeta.hasCustomModelData()) {
+                    if (itemMeta.getCustomModelData() == 938123) {
+                        InventoryMenu.openSpellMenu(player);
+                    }
+                }
             }
         }
 
         if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-            if (player.getInventory().getItemInMainHand() != null) {
-                if(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "Wand")) {
-                    Magic.castSpell(player);
+            ItemStack itemInHand = player.getInventory().getItemInMainHand();
+
+            if (itemInHand != null) {
+                ItemMeta itemMeta = itemInHand.getItemMeta();
+
+                if (itemMeta != null && itemMeta.hasCustomModelData()) {
+                    if (itemMeta.getCustomModelData() == 938123) {
+                        Magic.castSpell(player);
+                    }
                 }
             }
         }
     }
 
+    /**
+     * Let the player talk to a citizen when he right clicks it
+     * @param event
+     */
     @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        System.out.println(event.getCause().toString());
-        if (event.getDamager() instanceof Player) {
-            Player damager = (Player) event.getDamager();
-            Entity target = event.getEntity();
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        Entity clickedEntity = event.getRightClicked();
 
-            int xp = (int) event.getDamage() * Combat.getXpMultiplier(target);
+        if (clickedEntity instanceof Villager) {
+            Citizen citizen = server.getCitizen(clickedEntity.getUniqueId());
 
-            User damagerUser = Server.getInstance().getUser(damager.getUniqueId());
+            if (citizen != null) {
+                User user = server.getUser(player.getUniqueId());
+                user.setDialogueCitizen(clickedEntity);
 
-            if (damagerUser.hasDamageSpellHit()) {
-                damagerUser.addXp(xp, Main.Skill.MAGIC);
-            } else {
-                damagerUser.addXp(xp, Main.Skill.COMBAT);
+                State citizenState = citizen.getState(player.getUniqueId());
+                citizen.setActiveState(player, citizenState);
+
+                new CheckLeftRunnable(user, clickedEntity).runTaskTimerAsynchronously(plugin, 0, 10);
             }
 
-
-            damager.sendMessage(damager.getDisplayName() + " did " + event.getDamage() + "to " + target.getName());
+            event.setCancelled(true);
         }
+
+        System.out.println("Clicked: " + clickedEntity.getUniqueId());
     }
 
     @EventHandler
-    public void onPlayerFishEvent(PlayerFishEvent event) {
-        System.out.println(event.getState());
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Server server = Server.getInstance();
+        Player player = event.getPlayer();
 
+        if (false) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Get a random weight for a fish the user caught and add this to the metadata.
+     * @param event
+     */
+    @EventHandler
+    public void onPlayerFishEvent(PlayerFishEvent event) {
         if(event.getCaught() instanceof Item){
-            System.out.println("Caught item");
             Item caughtItem = (Item) event.getCaught();
-            User user = Server.getInstance().getUser(event.getPlayer().getUniqueId());
+            User user = server.getUser(event.getPlayer().getUniqueId());
             Fishing.handleCaughtItem(caughtItem, user);
         }
 
     }
 
     @EventHandler
-    public void onDeath(PlayerDeathEvent event) {
+    public  void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage();
+        String[] commandSplit = command.split(" ");
 
+        if (commandSplit.length > 0 && commandSplit[0].equals("/citizen")) {
+            Player player = event.getPlayer();
+            UUID playerUUID = player.getUniqueId();
+            User user = server.getUser(playerUUID);
+
+            Entity entity = user.getDialogueCitizen();
+            Citizen dialogueCitizen = server.getCitizen(entity.getUniqueId());
+
+            if (dialogueCitizen != null) {
+                State currentState = dialogueCitizen.getState(playerUUID);
+
+                int chosenResponseIndex = Integer.parseInt(commandSplit[2]);
+                Response chosenResponse = currentState.getResponses().get(chosenResponseIndex);
+                State nextState = chosenResponse.getState();
+
+                dialogueCitizen.setActiveState(player, nextState);
+            }
+        }
     }
 
+    //Entity events
+
+    /**
+     * Add combat xp if a player kills an entity.
+     * @param event
+     */
     @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity killedEntity = event.getEntity();
+        Player killer = killedEntity.getKiller();
+
+        if (killer != null) {
+            User killerUser = server.getUser(killer.getUniqueId());
+
+            int xp = Combat.getEntityXp(killedEntity);
+            killerUser.addXp(xp, Main.Skill.COMBAT);
+        }
     }
 
+    /**
+     * Check if the player is allowed to use this weapon whenever he damages an entity.
+     * @param event
+     */
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        Entity victim = event.getEntity();
+
+        if (damager instanceof  Player) {
+            Player player = (Player) damager;
+
+            ItemStack weapon = player.getInventory().getItemInMainHand();
+
+            if (weapon != null) {
+                User user = server.getUser(player.getUniqueId());
+
+                String lockedBy = user.toolIsLockedBy(weapon);
+                if (!lockedBy.equals("none")) {
+                    player.sendMessage("Your " + lockedBy + " level is too low to use this item");
+                    event.setCancelled(true);
+                }
+            }
+        }
+
+        Citizen citizen = server.getCitizen(victim.getUniqueId());
+
+        if (citizen != null) {
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * Check if the player is allowed to fire this bow.
+     * @param event
+     */
+    @EventHandler
+    public void onEntityShootBow(EntityShootBowEvent event) {
+        Entity shooter = event.getEntity();
+
+        if (shooter instanceof Player) {
+            Player player = (Player) shooter;
+            User user = server.getUser(shooter.getUniqueId());
+
+            ItemStack bow = event.getBow();
+
+            if (bow != null) {
+                String lockedBy = user.toolIsLockedBy(bow);
+
+                if (!lockedBy.equals("none")) {
+                    player.sendMessage("Your " + lockedBy + " level is too low to use this item");
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Prevent entities from spawning within points of interest.
+     * @param event
+     */
+    @EventHandler
+    public  void onEntitySpawn(EntitySpawnEvent event) {
+        Entity entity = event.getEntity();
+        ArrayList<PointOfInterest> pois = server.getPOIs();
+
+        for (int i = 0; i < pois.size(); i++) {
+            PointOfInterest poi = pois.get(i);
+            if (poi.isWithinRadius(entity)) {
+                event.setCancelled(true);
+                break;
+            }
+        }
+    }
+
+    // Other events
+    /**
+     * Add crafting xp whenever the player crafts an item
+     * @param event
+     */
     @EventHandler
     public void onCraftItem(CraftItemEvent event) {
         Player player = (Player) event.getWhoClicked();
-        User user = Server.getInstance().getUser(player.getUniqueId());
+        User user = server.getUser(player.getUniqueId());
 
-        user.addXp(1000, Main.Skill.CRAFTING);
+        ItemStack craftedItem = event.getCurrentItem();
+        ItemMeta craftedItemMeta = craftedItem.getItemMeta();
+
+        if (craftedItemMeta.hasCustomModelData()) {
+            int modelData = craftedItemMeta.getCustomModelData();
+
+            if (!Crafting.canCraft(user.getCraftingLvl(), modelData)) {
+                player.sendMessage("Your crafting level is too low to craft this item");
+                event.setCancelled(true);
+
+                return;
+            }
+        }
+
+        user.addXp(50, Main.Skill.CRAFTING);
     }
 
     @EventHandler
@@ -139,11 +348,11 @@ public class Events implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
-        System.out.println(event.getCurrentItem().getType().toString());
+        ItemStack clickedItem = event.getCurrentItem();
 
-        if (event.getCurrentItem() != null) {
+        if (clickedItem != null) {
             // Open the main menu.
-            if (event.getRawSlot() == 36 && event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Menu")) {
+            if (event.getRawSlot() == 36 && clickedItem.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Menu")) {
                 event.setCancelled(true);
 
                 InventoryMenu.openMainMenu(player);
@@ -158,7 +367,7 @@ public class Events implements Listener {
         }
 
         if (player.getOpenInventory().getTitle().equals("Furnace") && event.getAction().toString().split("_")[0].equals("PICKUP_ALL")) {
-            User user = Server.getInstance().getUser(player.getUniqueId());
+            User user = server.getUser(player.getUniqueId());
             user.addXp(1000, Main.Skill.CRAFTING
             );
         }
@@ -183,13 +392,14 @@ public class Events implements Listener {
     // Event that handle players joining and leaving.
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Server.getInstance().userJoined(event.getPlayer());
+        server.userJoined(event.getPlayer());
+        CutScene.intro(event.getPlayer());
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        User user = Server.getInstance().getUser(player.getUniqueId());
+        User user = server.getUser(player.getUniqueId());
 
         plugin.getConfig().set("Users." + player.getUniqueId() +".combatLvl", user.getCombatLvl());
         plugin.getConfig().set("Users." + player.getUniqueId() +".combatXp", user.getCombatXp());

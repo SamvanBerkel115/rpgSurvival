@@ -14,8 +14,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.model.Server;
 import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
 import sam.berkel.rpgSurvival.skills.Magic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class InventoryMenu {
@@ -50,27 +52,21 @@ public class InventoryMenu {
     }
 
     public static void openTeleportMenu(Player player) {
-        Inventory menu = Main.getPlugin(Main.class).getServer().createInventory(null, 9, ChatColor.DARK_RED + "Teleports");
+        Server server = Server.getInstance();
+        Inventory menu = Main.getPlugin(Main.class).getServer().createInventory(null, 27, ChatColor.DARK_RED + "Teleports");
 
-        ItemStack city  = new ItemStack(Material.STONE_BRICKS, 1);
-        ItemMeta cityMeta = city.getItemMeta();
-        cityMeta.setDisplayName(ChatColor.RED + "City");
-        city.setItemMeta(cityMeta);
+        ArrayList<TeleportBlock> teleportBlocks = server.getTeleportBlockList();
 
-        ItemStack bosses  = new ItemStack(Material.GOLDEN_SWORD, 1);
-        ItemMeta bossesMeta = bosses.getItemMeta();
-        bossesMeta.setDisplayName(ChatColor.RED + "Bosses");
-        bosses.setItemMeta(bossesMeta);
+        for (int i = 0; i < teleportBlocks.size(); i++) {
+            TeleportBlock tpBlock = teleportBlocks.get(i);
+            ItemStack tpItem = new ItemStack(tpBlock.getMaterial());
 
-        ItemStack empty = new ItemStack(Material.BLACK_STAINED_GLASS_PANE, 1);
-        ItemMeta emptyMeta = empty.getItemMeta();
-        emptyMeta.setDisplayName("'");
-        empty.setItemMeta(emptyMeta);
+            ItemMeta im = tpItem.getItemMeta();
+            im.setDisplayName(tpBlock.getName());
+            tpItem.setItemMeta(im);
 
-        menu.setItem(0, empty);
-        menu.setItem(1, city);
-        menu.setItem(2, empty);
-        menu.setItem(3, bosses);
+            menu.setItem(i, tpItem);
+        }
 
         player.openInventory(menu);
     }
@@ -144,21 +140,14 @@ public class InventoryMenu {
     }
 
     public static void handleTeleportMenuClick(InventoryClickEvent event) {
-        Plugin plugin = Main.getPlugin(Main.class);
-        String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+        Server server = Server.getInstance();
         HumanEntity player = event.getWhoClicked();
 
-        if (itemName.equals(ChatColor.RED + "City")) {
-            World bosses = plugin.getServer().getWorld("Survival");
-            Location loc = new Location(bosses, 0, 70, 0);
+        String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+        Location teleLoc = server.getTeleportLocation(itemName).clone();
+        teleLoc.setWorld(player.getWorld());
 
-            player.teleport(loc);
-        } else if (itemName.equals(ChatColor.RED + "Bosses")) {
-            World survival = plugin.getServer().getWorld("Bosses");
-            Location loc = new Location(survival, 0, 70, 0);
-
-            player.teleport(loc);
-        }
+        player.teleport(teleLoc);
     }
 
     public static void handleSpellsMenuClick(InventoryClickEvent event) {

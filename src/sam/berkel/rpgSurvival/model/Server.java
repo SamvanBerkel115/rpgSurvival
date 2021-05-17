@@ -1,25 +1,26 @@
 package sam.berkel.rpgSurvival.model;
 
-import org.bukkit.*;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 import sam.berkel.rpgSurvival.InventoryMenu;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.model.citizen.Citizen;
+import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
 import sam.berkel.rpgSurvival.skills.Magic;
-import sam.berkel.rpgSurvival.skills.Mining;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class Server {
     // static variable single_instance of type Singleton
     private static Server instance = null;
 
     private Map<String, User> users;
+    private Map<UUID, Citizen> citizens;
+    private HashMap<Location, TeleportBlock> teleportBlocks;
+    private HashMap<String, Location> teleportLocations;
     private ArrayList<PointOfInterest> POIs;
     private Plugin plugin = Main.getPlugin(Main.class);
     private double base;
@@ -33,6 +34,9 @@ public final class Server {
         exponent = plugin.getConfig().getDouble("Leveling.formula.exponent");
 
         POIs = initLocations();
+        citizens = Citizen.getCitizensFromConfig();
+        teleportBlocks = TeleportBlock.getTeleportBlocksFromConfig();
+        teleportLocations = TeleportBlock.getTeleportLocationsFromConfig();
     };
 
     // static method to create instance of Singleton class
@@ -47,7 +51,7 @@ public final class Server {
     public ArrayList<PointOfInterest> initLocations() {
         ArrayList<PointOfInterest> POIs = new ArrayList<>();
 
-        ConfigurationSection POISection = plugin.getConfig().getConfigurationSection("Locations.");
+        ConfigurationSection POISection = plugin.getConfig().getConfigurationSection("POIs.");
 
         Set<String> locationKeys = POISection.getKeys(false);
 
@@ -134,8 +138,43 @@ public final class Server {
         return users.get(uuid.toString());
     }
 
+    public  Citizen getCitizen(UUID uuid) {
+        return citizens.get(uuid);
+    }
+
+    public TeleportBlock getTeleportBlock(Location location) {
+        return teleportBlocks.get(location);
+    }
+
+    public ArrayList<TeleportBlock> getTeleportBlockList() {
+        ArrayList<TeleportBlock> teleportBlockList = new ArrayList<>();
+
+        for (Location loc : teleportBlocks.keySet()) {
+            teleportBlockList.add(teleportBlocks.get(loc));
+        }
+
+        return teleportBlockList;
+    }
+
+    public Location getTeleportLocation(String teleportName) {
+        return teleportLocations.get(teleportName);
+    }
+
     public ArrayList<PointOfInterest> getPOIs() {
         return POIs;
+    }
+
+    public void addPOI(PointOfInterest poi) {
+        this.POIs.add(poi);
+    }
+
+    public void removePOI(String name) {
+        for (int i = 0; i < POIs.size(); i++) {
+            if (POIs.get(i).getName().equals(name)) {
+                POIs.remove(i);
+                break;
+            }
+        }
     }
 
     public Set<String> getUserKeys() {

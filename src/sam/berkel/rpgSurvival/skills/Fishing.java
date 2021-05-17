@@ -3,7 +3,6 @@ package sam.berkel.rpgSurvival.skills;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.User;
@@ -25,6 +24,8 @@ public class Fishing {
     }
 
     public static boolean isLarge(int level) {
+        if (level < 10) return false;
+
         if ( Math.random() > 0.9) {
             return true;
         } else {
@@ -37,8 +38,6 @@ public class Fishing {
 
         // Check if the item that the player has caught a fish.
         if(caughtMat.equals(Material.COD) || caughtMat.equals(Material.SALMON) || caughtMat.equals(Material.PUFFERFISH) || caughtMat.equals(Material.TROPICAL_FISH)){
-            System.out.println("Caught fish");
-
             // Add the weight of the fish
             ItemMeta itemMeta = caughtItem.getItemStack().getItemMeta();
             double fishWeight = Fishing.getFishWeight(user.getFishingLvl());
@@ -50,12 +49,10 @@ public class Fishing {
                 fishWeight =  2 * fishWeight;
             }
 
-            user.addXp((int) (700 * fishWeight), Main.Skill.FISHING);
+            user.addXp((int) (200 * fishWeight), Main.Skill.FISHING);
 
-            itemMeta.setLore(Arrays.asList(ChatColor.GRAY + "Weight: " + fishWeight));
+            itemMeta.setLore(Arrays.asList(ChatColor.GRAY + "Weight: " + fishWeight + "kg"));
             caughtItem.getItemStack().setItemMeta(itemMeta);
-
-            System.out.println(caughtItem.getItemStack().getItemMeta().getDisplayName());
         }
     }
 }

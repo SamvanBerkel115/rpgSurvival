@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Woodcutting {
-    // Checks if a given tool should give mining xp.
+    // Checks if a given tool should give woodcutting xp.
     public static boolean isWoodcuttingTool(ItemStack item) {
         Plugin plugin = Main.getPlugin(Main.class);
 
@@ -24,13 +24,14 @@ public class Woodcutting {
     public static void brokeBlock(User user, Block block) {
         Server server = Server.getInstance();
         ItemStack tool = user.getPlayer().getInventory().getItemInMainHand();
-        user.getPlayer().sendMessage("You used" + tool.getType().toString());
 
         if (isWoodcuttingTool(tool)) {
             String blockType = block.getType().toString();
 
             int gainedXp = getBlockXp(block);
             user.addXp(gainedXp, Main.Skill.WOODCUTTING);
+
+            System.out.println("Gained " + gainedXp + " woodcutting xp.");
         }
     }
 
@@ -60,12 +61,16 @@ public class Woodcutting {
             blockedItems.add("IRON_AXE");
         }
 
-        if (level < 20) {
+        if (level < 15) {
             blockedItems.add("GOLD_AXE");
         }
 
-        if (level < 30) {
+        if (level < 20) {
             blockedItems.add("DIAMOND_AXE");
+        }
+
+        if (level < 30) {
+            blockedItems.add("NETHERITE_AXE");
         }
 
         return blockedItems;

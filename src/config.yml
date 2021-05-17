@@ -1,4 +1,5 @@
 Users:
+Citizens:
 
 Leveling:
   formula:
@@ -55,21 +56,25 @@ Leveling:
       - 'GOLD_AXE'
       - 'DIAMOND_AXE'
     woodcutting:
+      - 'AIR'
       - 'WOOD_AXE'
       - 'STONE_AXE'
       - 'IRON_AXE'
       - 'GOLD_AXE'
       - 'DIAMOND_AXE'
     excavation:
+      - 'AIR'
       - 'WOOD_SHOVEL'
       - 'STONE_SHOVEL'
       - 'IRON_SHOVEL'
       - 'GOLD_SHOVEl'
       - 'DIAMOND_SHOVEL'
 
-Locations:
-  city:
+POIs:
+  City:
     radius: 100
-    x: 0
-    y: 0
-    z: 0
+    x: -540
+    y: 82
+    z: -240
+
+Paths:

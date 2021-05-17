@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Combat {
     // Returns the amount of xp that is gained when a player destroys this block with a mining tool.
-    public static int getXpMultiplier(Entity entity) {
+    public static int getEntityXp(Entity entity) {
         Plugin plugin = Main.getPlugin(Main.class);
 
         String name = entity.getName();
@@ -30,6 +30,18 @@ public class Combat {
         }
         if (level < 10) {
             blockedItems.add("IRON_SWORD");
+        }
+        if (level < 15) {
+            blockedItems.add("BOW");
+        }
+        if (level < 20) {
+            blockedItems.add("GOLDEN_SWORD");
+        }
+        if (level < 30) {
+            blockedItems.add("DIAMOND_SWORD");
+        }
+        if (level < 40) {
+            blockedItems.add("NETHERITE_SWORD");
         }
 
         return blockedItems;

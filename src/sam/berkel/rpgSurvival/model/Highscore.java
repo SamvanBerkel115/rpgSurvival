@@ -1,4 +1,5 @@
 package sam.berkel.rpgSurvival.model;
 
-public class xpValues {
+public class Highscore {
+
 }
