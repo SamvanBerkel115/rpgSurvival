@@ -127,8 +127,8 @@ public final class Server {
 
             user = new User(player, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
 
-            Magic.giveWand(player);
-            InventoryMenu.placeMenuButton(player);
+            //Magic.giveWand(player);
+            //InventoryMenu.placeMenuButton(player);
         }
 
         users.put(user.getUniqueId().toString(), user);
@@ -158,6 +158,37 @@ public final class Server {
 
     public Location getTeleportLocation(String teleportName) {
         return teleportLocations.get(teleportName);
+    }
+
+    public void addTeleportBlock(TeleportBlock tpBlock) {
+        String blockName = tpBlock.getName();
+        Location blockLocation = tpBlock.getBlockLocation();
+
+        teleportBlocks.put(blockLocation, tpBlock);
+        teleportLocations.put(blockName, blockLocation);
+
+        // Write the teleport to config
+        plugin.getConfig().getStringList("TeleportBlocks").add(blockName);
+
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".blockX", blockLocation.getBlockX());
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".blockY", blockLocation.getBlockY());
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".blockZ", blockLocation.getBlockZ());
+
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".targetX", tpBlock.getTarget().getX());
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".targetY", tpBlock.getTarget().getY());
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".targetZ", tpBlock.getTarget().getZ());
+
+        plugin.getConfig().set("TeleportBlocks." + blockName + ".material", tpBlock.getMaterial().toString());
+        plugin.saveConfig();
+
+        System.out.println("Finished adding the block to the config");
+    }
+
+    public void removeTeleportBlock(TeleportBlock tpBlock) {
+        teleportBlocks.remove(tpBlock.getBlockLocation());
+        teleportLocations.remove(tpBlock.getName());
+
+        plugin.getConfig().set(tpBlock.getName(), null);
     }
 
     public ArrayList<PointOfInterest> getPOIs() {

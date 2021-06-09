@@ -18,12 +18,9 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import sam.berkel.rpgSurvival.model.PointOfInterest;
+import sam.berkel.rpgSurvival.model.*;
 import sam.berkel.rpgSurvival.model.citizen.CheckLeftRunnable;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
-import sam.berkel.rpgSurvival.model.CutScene;
-import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.User;
 import sam.berkel.rpgSurvival.model.citizen.Response;
 import sam.berkel.rpgSurvival.model.citizen.State;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
@@ -53,11 +50,15 @@ public class Events implements Listener {
 
         ItemStack itemInHand = event.getItemInHand();
         if (itemInHand.hasItemMeta() && itemInHand.getItemMeta().hasCustomModelData()) {
-            System.out.println("This item has a meta");
-
             ItemMeta itemInHandMeta = itemInHand.getItemMeta();
             if (itemInHandMeta.getCustomModelData() == 938124) {
-                System.out.println("You just placed a teleport block.");
+                Player player = event.getPlayer();
+                User user = server.getUser(player.getUniqueId());
+
+                user.setPlacedTeleBlock(event.getBlock());
+                player.sendTitle("" , "Type the name of the teleport in the chat.", 10, 80, 20);
+
+                user.setState(UserState.CREATING_TELEPORT);
             }
         }
 
@@ -79,6 +80,14 @@ public class Events implements Listener {
         Woodcutting.brokeBlock(user, brokenBlock);
         Excavation.brokeBlock(user, brokenBlock);
         Farming.brokeBlock(user, brokenBlock);
+
+        if (brokenBlock.getType() == Material.CYAN_GLAZED_TERRACOTTA) {
+            TeleportBlock tpBlock = server.getTeleportBlock(brokenBlock.getLocation());
+
+            if (tpBlock != null) {
+                server.removeTeleportBlock(tpBlock);
+            }
+        }
     }
 
     // Player events
@@ -214,6 +223,24 @@ public class Events implements Listener {
 
                 dialogueCitizen.setActiveState(player, nextState);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        Server server = Server.getInstance();
+        Player player = event.getPlayer();
+        User user = server.getUser(player.getUniqueId());
+
+        if (user.getState() == UserState.CREATING_TELEPORT) {
+            Block teleBlock = user.getPlacedTeleBlock();
+            Location blockLoc = new Location(null, teleBlock.getX(), teleBlock.getY(), teleBlock.getZ());
+            TeleportBlock tpBlock = new TeleportBlock(event.getMessage(), Material.CYAN_GLAZED_TERRACOTTA, blockLoc, blockLoc);
+
+            server.addTeleportBlock(tpBlock);
+            user.setState(null);
+
+            event.setCancelled(true);
         }
     }
 

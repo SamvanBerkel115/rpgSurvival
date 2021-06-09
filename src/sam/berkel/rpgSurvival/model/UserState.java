@@ -1,5 +1,5 @@
 package sam.berkel.rpgSurvival.model;
 
-public enum UserAction {
+public enum UserState {
     CREATING_TELEPORT
 }

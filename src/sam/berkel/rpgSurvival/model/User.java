@@ -44,7 +44,8 @@ public class User {
     private boolean damageSpellHit;
     private boolean isInCutscene;
     private Entity dialogueCitizen;
-    private Block teleportBlock;
+    private UserState state;
+    private Block placedTeleBlock;
 
     public User(Player player,
                 int combatXp, int combatLvl, int craftingXp, int craftingLvl, int excavationXp, int excavationLvl, int farmingXp, int farmingLvl,
@@ -298,12 +299,20 @@ public class User {
         isInCutscene = inCutscene;
     }
 
-    public Block getTeleportBlock() {
-        return teleportBlock;
+    public UserState getState() {
+        return state;
     }
 
-    public void setTeleportBlock(Block teleportBlock) {
-        this.teleportBlock = teleportBlock;
+    public void setState(UserState state) {
+        this.state = state;
+    }
+
+    public Block getPlacedTeleBlock() {
+        return placedTeleBlock;
+    }
+
+    public void setPlacedTeleBlock(Block placedTeleBlock) {
+        this.placedTeleBlock = placedTeleBlock;
     }
 
     public boolean hasDamageSpellHit() {
