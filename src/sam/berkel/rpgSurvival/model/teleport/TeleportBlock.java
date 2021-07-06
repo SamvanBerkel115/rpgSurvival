@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.UserState;
 
 import java.util.HashMap;
 import java.util.Set;

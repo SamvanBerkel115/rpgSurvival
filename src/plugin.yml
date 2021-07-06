@@ -21,3 +21,8 @@ commands:
     usage: /<cutscene> recordPath [duration] [name]
     permission: rpg.cutScene
     permission-message: You don't have <permission>
+  boss:
+    description: Configure bosses.
+    usage: /<boss> link [bossName]
+    permission: rpg.boss
+    permission-message: You don't have <permission>

@@ -7,12 +7,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import sam.berkel.rpgSurvival.Main;
-import sun.security.krb5.Config;
+import sam.berkel.rpgSurvival.model.user.User;
 
-import javax.security.auth.login.Configuration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class CutScene {
     public static void intro(Player player) {

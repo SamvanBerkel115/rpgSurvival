@@ -4,14 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import sam.berkel.rpgSurvival.InventoryMenu;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.model.bosses.Boss;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
-import sam.berkel.rpgSurvival.skills.Magic;
+import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class Server {
     // static variable single_instance of type Singleton
@@ -21,6 +20,7 @@ public final class Server {
     private Map<UUID, Citizen> citizens;
     private HashMap<Location, TeleportBlock> teleportBlocks;
     private HashMap<String, Location> teleportLocations;
+    private HashMap<Location, Boss> bossLocations;
     private ArrayList<PointOfInterest> POIs;
     private Plugin plugin = Main.getPlugin(Main.class);
     private double base;

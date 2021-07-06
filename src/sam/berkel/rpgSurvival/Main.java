@@ -5,6 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
+import sam.berkel.rpgSurvival.commands.BossCommand;
 import sam.berkel.rpgSurvival.commands.CitizenCommand;
 import sam.berkel.rpgSurvival.commands.CutSceneCommand;
 import sam.berkel.rpgSurvival.commands.POICommand;
@@ -31,6 +32,10 @@ public class Main extends JavaPlugin {
         this.getCommand(CutSceneCommand.command).setExecutor(new CutSceneCommand());
         this.getCommand(POICommand.command).setExecutor(new POICommand());
         this.getCommand(CitizenCommand.command).setExecutor(new CitizenCommand());
+        this.getCommand(BossCommand.command).setExecutor(new BossCommand());
+
+        // Load all worlds
+        Bukkit.createWorld(new WorldCreator("Bosses"));
 
         // Performs the check if players have exited or entered the radius of a POI.
         new POIRunnable().runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 60);

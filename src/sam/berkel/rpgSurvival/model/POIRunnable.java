@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.model.user.User;
 
 public class POIRunnable extends BukkitRunnable {
     @Override

@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;

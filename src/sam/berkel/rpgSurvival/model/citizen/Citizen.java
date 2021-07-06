@@ -5,10 +5,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.Main;
-import sam.berkel.rpgSurvival.model.User;
 
 import java.util.*;
 

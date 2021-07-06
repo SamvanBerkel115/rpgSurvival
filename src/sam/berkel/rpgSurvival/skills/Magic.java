@@ -2,7 +2,6 @@ package sam.berkel.rpgSurvival.skills;
 
 
 import org.bukkit.*;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,7 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.Collection;
 

@@ -1,7 +1,5 @@
 package sam.berkel.rpgSurvival;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +22,8 @@ import sam.berkel.rpgSurvival.model.citizen.Citizen;
 import sam.berkel.rpgSurvival.model.citizen.Response;
 import sam.berkel.rpgSurvival.model.citizen.State;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
+import sam.berkel.rpgSurvival.model.user.User;
+import sam.berkel.rpgSurvival.model.user.UserState;
 import sam.berkel.rpgSurvival.skills.*;
 
 import java.util.ArrayList;

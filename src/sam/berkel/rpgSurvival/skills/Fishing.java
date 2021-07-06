@@ -5,7 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.meta.ItemMeta;
 import sam.berkel.rpgSurvival.Main;
-import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.Arrays;
 

@@ -1,20 +1,14 @@
 package sam.berkel.rpgSurvival.skills;
 
 import org.bukkit.block.Block;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class Mining {
     // Checks if a given tool should give mining xp.

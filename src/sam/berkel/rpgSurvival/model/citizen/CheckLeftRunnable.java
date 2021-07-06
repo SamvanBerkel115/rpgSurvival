@@ -4,7 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.User;
+import sam.berkel.rpgSurvival.model.user.User;
 
 public class CheckLeftRunnable extends BukkitRunnable {
     private User user;
