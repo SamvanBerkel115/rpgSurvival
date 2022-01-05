@@ -23,6 +23,22 @@ public class PointOfInterest {
         return name;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
     public double calculateDistance(Entity entity) {
         Location loc = entity.getLocation();
         double locX = loc.getX();

@@ -40,22 +40,12 @@ public class POICommand implements CommandExecutor {
 
         System.out.println("Added poi: " + name + "(" + x + ", " + y + ", " + z + ") " + radius);
 
-        Plugin plugin = Main.getPlugin(Main.class);
-
-        plugin.getConfig().set("POIs." + name +".x", x);
-        plugin.getConfig().set("POIs." + name +".y", y);
-        plugin.getConfig().set("POIs." + name +".z", z);
-        plugin.getConfig().set("POIs." + name +".radius", radius);
-
         return true;
     }
 
     // Args: delete, name
     public boolean deletePOI(CommandSender commandSender, String[] args) {
         Server.getInstance().removePOI(args[1]);
-
-        Plugin plugin = Main.getPlugin(Main.class);
-        plugin.getConfig().set("POIs." + args[1], null);
 
         return true;
     }

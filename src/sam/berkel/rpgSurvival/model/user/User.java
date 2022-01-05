@@ -31,19 +31,19 @@ public class User {
     private UserState state;
     private Block placedTeleBlock;
 
-    public User(Player player,
-                int combatXp, int combatLvl, int craftingXp, int craftingLvl, int excavationXp, int excavationLvl, int farmingXp, int farmingLvl,
-                int fishingXp, int fishingLvl, int magicXp, int magicLvl, int miningXp, int miningLvl, int woodcuttingXp, int woodcuttingLvl) {
+    public User(Player player, UserLevels levels) {
         System.out.println("Added new user" + player.getDisplayName());
         this.player = player;
 
-        levels = new UserLevels(combatXp, combatLvl, craftingXp, craftingLvl, excavationXp, excavationLvl, farmingXp, farmingLvl, fishingXp, fishingLvl, magicXp, magicLvl, miningXp, miningLvl, woodcuttingXp, woodcuttingLvl);
+        this.levels = levels;
 
         System.out.println(player.getUniqueId());
 
         currentPoi = "";
 
         scoreboard = new UserScoreboard(this);
+
+        System.out.println("Initialized scoreboard");
 
         lockedItems = new HashMap<>();
         initLockedItems();

@@ -10,26 +10,30 @@ public class UserScoreboard {
     private Scoreboard scoreboard;
 
     public UserScoreboard(User user) {
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        scoreboard = manager.getNewScoreboard();
+        this.user = user;
+
+        scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
         Objective levelObjective = scoreboard.registerNewObjective("levels", "Level", ChatColor.GOLD + "Levels");
         levelObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         user.getPlayer().setScoreboard(scoreboard);
 
         updateScoreboard();
-        this.user = user;
     }
 
     public void updateScoreboard() {
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Combat").setScore(user.getLevels().getCombatLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Crafting").setScore(user.getLevels().getCraftingLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Excavation").setScore(user.getLevels().getExcavationLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Farming").setScore(user.getLevels().getFarmingLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Fishing").setScore(user.getLevels().getFishingLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Magic").setScore(user.getLevels().getMagicLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Mining").setScore(user.getLevels().getMiningLvl());
-        scoreboard.getObjective("levels").getScore(ChatColor.WHITE + "Woodcutting").setScore(user.getLevels().getWoodcuttingLvl());
+        System.out.println("Updating score");
+        UserLevels userLvls = user.getLevels();
+        Objective levelObjective = scoreboard.getObjective("levels");
+
+        levelObjective.getScore(ChatColor.WHITE + "Combat").setScore(userLvls.getCombatLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Crafting").setScore(userLvls.getCraftingLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Excavation").setScore(userLvls.getExcavationLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Farming").setScore(userLvls.getFarmingLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Fishing").setScore(userLvls.getFishingLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Magic").setScore(userLvls.getMagicLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Mining").setScore(userLvls.getMiningLvl());
+        levelObjective.getScore(ChatColor.WHITE + "Woodcutting").setScore(userLvls.getWoodcuttingLvl());
     }
 
     public void setLevel(Main.Skill skill, int level) {

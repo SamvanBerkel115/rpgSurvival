@@ -420,6 +420,8 @@ public class Events implements Listener {
     // Event that handle players joining and leaving.
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        event.getPlayer().sendMessage("Test");
+
         server.userJoined(event.getPlayer());
         CutScene.intro(event.getPlayer());
     }
@@ -427,29 +429,7 @@ public class Events implements Listener {
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        User user = server.getUser(player.getUniqueId());
-        UserLevels userLvls = user.getLevels();
 
-        plugin.getConfig().set("Users." + player.getUniqueId() +".combatLvl", userLvls.getCombatLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".combatXp", userLvls.getCombatXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingLvl", userLvls.getCraftingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingXp", userLvls.getCraftingXp());
-
-        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationLvl", userLvls.getExcavationLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationXp", userLvls.getExcavationXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", userLvls.getFarmingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", userLvls.getFarmingXp());
-
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", userLvls.getFishingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", userLvls.getFishingXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".magicLvl", userLvls.getMagicLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".magicXp", userLvls.getMagicXp());
-
-        plugin.getConfig().set("Users." + player.getUniqueId() +".miningLvl", userLvls.getMiningLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".miningXp", userLvls.getMiningXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingLvl", userLvls.getWoodcuttingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingXp", userLvls.getWoodcuttingXp());
-
-        plugin.saveConfig();
+        server.getConfigManger().saveUserLevels(player);
     }
 }

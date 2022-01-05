@@ -19,8 +19,9 @@ public class Main extends JavaPlugin {
         Bukkit.getLogger().info("Starting RPG Survival...");
         loadConfig();
 
-        // Load the bosses world.
+        // Load the extra worlds.
         getServer().createWorld(new WorldCreator("Bosses"));
+        getServer().createWorld(new WorldCreator("Activities"));
 
         // Add all events.
         getServer().getPluginManager().registerEvents(new Events(), this);
@@ -33,9 +34,6 @@ public class Main extends JavaPlugin {
         this.getCommand(POICommand.command).setExecutor(new POICommand());
         this.getCommand(CitizenCommand.command).setExecutor(new CitizenCommand());
         this.getCommand(BossCommand.command).setExecutor(new BossCommand());
-
-        // Load all worlds
-        Bukkit.createWorld(new WorldCreator("Bosses"));
 
         // Performs the check if players have exited or entered the radius of a POI.
         new POIRunnable().runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 60);
