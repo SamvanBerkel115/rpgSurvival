@@ -6,6 +6,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.meta.ItemMeta;
 import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.user.User;
+import sam.berkel.rpgSurvival.model.user.UserLevels;
 
 import java.util.Arrays;
 
@@ -35,15 +36,16 @@ public class Fishing {
 
     public static void handleCaughtItem(Item caughtItem, User user) {
         Material caughtMat = caughtItem.getItemStack().getType();
+        UserLevels userLvls = user.getLevels();
 
         // Check if the item that the player has caught a fish.
         if(caughtMat.equals(Material.COD) || caughtMat.equals(Material.SALMON) || caughtMat.equals(Material.PUFFERFISH) || caughtMat.equals(Material.TROPICAL_FISH)){
             // Add the weight of the fish
             ItemMeta itemMeta = caughtItem.getItemStack().getItemMeta();
-            double fishWeight = Fishing.getFishWeight(user.getFishingLvl());
+            double fishWeight = Fishing.getFishWeight(userLvls.getFishingLvl());
 
             // Give the fish a different name and weight if the fish is large.
-            if (Fishing.isLarge(user.getFishingLvl())) {
+            if (Fishing.isLarge(userLvls.getFishingLvl())) {
                 itemMeta.setDisplayName(ChatColor.GOLD + "Large " + caughtMat.toString().toLowerCase());
 
                 fishWeight =  2 * fishWeight;

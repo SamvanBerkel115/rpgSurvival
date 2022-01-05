@@ -23,6 +23,7 @@ import sam.berkel.rpgSurvival.model.citizen.Response;
 import sam.berkel.rpgSurvival.model.citizen.State;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
 import sam.berkel.rpgSurvival.model.user.User;
+import sam.berkel.rpgSurvival.model.user.UserLevels;
 import sam.berkel.rpgSurvival.model.user.UserState;
 import sam.berkel.rpgSurvival.skills.*;
 
@@ -354,7 +355,7 @@ public class Events implements Listener {
         if (craftedItemMeta.hasCustomModelData()) {
             int modelData = craftedItemMeta.getCustomModelData();
 
-            if (!Crafting.canCraft(user.getCraftingLvl(), modelData)) {
+            if (!Crafting.canCraft(user.getLevels().getCraftingLvl(), modelData)) {
                 player.sendMessage("Your crafting level is too low to craft this item");
                 event.setCancelled(true);
 
@@ -427,26 +428,27 @@ public class Events implements Listener {
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         User user = server.getUser(player.getUniqueId());
+        UserLevels userLvls = user.getLevels();
 
-        plugin.getConfig().set("Users." + player.getUniqueId() +".combatLvl", user.getCombatLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".combatXp", user.getCombatXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingLvl", user.getCraftingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingXp", user.getCraftingXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".combatLvl", userLvls.getCombatLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".combatXp", userLvls.getCombatXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingLvl", userLvls.getCraftingLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".craftingXp", userLvls.getCraftingXp());
 
-        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationLvl", user.getExcavationLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationXp", user.getExcavationXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", user.getFarmingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", user.getFarmingXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationLvl", userLvls.getExcavationLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".excavationXp", userLvls.getExcavationXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", userLvls.getFarmingLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", userLvls.getFarmingXp());
 
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", user.getFishingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", user.getFishingXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".magicLvl", user.getMagicLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".magicXp", user.getMagicXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingLvl", userLvls.getFishingLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".fishingXp", userLvls.getFishingXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".magicLvl", userLvls.getMagicLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".magicXp", userLvls.getMagicXp());
 
-        plugin.getConfig().set("Users." + player.getUniqueId() +".miningLvl", user.getMiningLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".miningXp", user.getMiningXp());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingLvl", user.getWoodcuttingLvl());
-        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingXp", user.getWoodcuttingXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".miningLvl", userLvls.getMiningLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".miningXp", userLvls.getMiningXp());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingLvl", userLvls.getWoodcuttingLvl());
+        plugin.getConfig().set("Users." + player.getUniqueId() +".woodcuttingXp", userLvls.getWoodcuttingXp());
 
         plugin.saveConfig();
     }

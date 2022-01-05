@@ -30,6 +30,6 @@ public class SpleefArena {
         ArrayList<Player> playersArrList = new ArrayList<>(playersList);
 
         CountDownRunnable cdr = new CountDownRunnable(playersArrList, 10);
-        cdr.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 0);
+        cdr.runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 20);
     }
 }
