@@ -1,11 +1,11 @@
 package sam.berkel.rpgSurvival.model;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import sam.berkel.rpgSurvival.ConfigManager;
+import sam.berkel.rpgSurvival.config.ConfigManager;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.model.activities.Activities;
 import sam.berkel.rpgSurvival.model.bosses.Boss;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
@@ -24,6 +24,7 @@ public final class Server {
     private HashMap<String, Location> teleportLocations;
     private HashMap<Location, Boss> bossLocations;
     private ArrayList<PointOfInterest> POIs;
+    private Activities activities;
 
     private Plugin plugin = Main.getPlugin(Main.class);
     private ConfigManager cfgManager;
@@ -44,6 +45,7 @@ public final class Server {
         citizens = cfgManager.getCitizens();
         teleportBlocks = cfgManager.getTeleportBlocks();
         teleportLocations = cfgManager.getTeleportLocations();
+        activities = cfgManager.getActivities();
     };
 
     // static method to create instance of Singleton class
@@ -61,6 +63,10 @@ public final class Server {
 
     public double getExponent() {
         return exponent;
+    }
+
+    public Activities getActivities() {
+        return activities;
     }
 
     /**

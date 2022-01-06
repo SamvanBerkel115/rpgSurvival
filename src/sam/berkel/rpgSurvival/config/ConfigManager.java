@@ -1,16 +1,19 @@
-package sam.berkel.rpgSurvival;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+package sam.berkel.rpgSurvival.config;
+import org.bukkit.*;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.PointOfInterest;
 import sam.berkel.rpgSurvival.model.Server;
+import sam.berkel.rpgSurvival.model.activities.Activities;
+import sam.berkel.rpgSurvival.model.activities.PVPArena.PVPArena;
+import sam.berkel.rpgSurvival.model.activities.spleef.RoundSpleefArena;
+import sam.berkel.rpgSurvival.model.activities.spleef.SpleefArena;
+import sam.berkel.rpgSurvival.model.activities.spleef.SpleefArenaType;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
 import sam.berkel.rpgSurvival.model.citizen.Response;
 import sam.berkel.rpgSurvival.model.citizen.State;
@@ -26,6 +29,8 @@ public class ConfigManager {
     private Main plugin;
 
     // Files & file configs
+    private FileConfiguration activitiesCfg;
+    private File activitiesFile;
     private FileConfiguration bossesCfg;
     private File bossesFile;
     private FileConfiguration citizensCfg;
@@ -44,6 +49,7 @@ public class ConfigManager {
             plugin.getDataFolder().mkdir();
         }
 
+        initActivities();
         initBosses();
         initCitizens();
         initPOIs();
@@ -51,7 +57,31 @@ public class ConfigManager {
         initUsers();
     }
 
-    private void initBosses () {
+    private void initActivities() {
+        activitiesFile = new File(plugin.getDataFolder(), "activities.yml");
+        if (!activitiesFile.exists()) {
+            try {
+                activitiesFile.createNewFile();
+            } catch (IOException ex) {
+                Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not create activities.yml file.");
+            }
+        }
+        activitiesCfg = YamlConfiguration.loadConfiguration(activitiesFile);
+
+        if (!activitiesCfg.contains("settings")) activitiesCfg.createSection("settings");
+        if (!activitiesCfg.contains("settings.lobbyTimer")) activitiesCfg.set("settings.lobbyTimer", 60);
+        if (!activitiesCfg.contains("settings.minimumPlayers")) activitiesCfg.set("settings.minimumPlayers", 1);
+
+        if (!activitiesCfg.contains("arenas")) activitiesCfg.createSection("arenas");
+
+        try {
+            activitiesCfg.save(activitiesFile);
+        } catch (IOException ex) {
+            Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not update activities.yml");
+        }
+    }
+
+    private void initBosses() {
         bossesFile = new File(plugin.getDataFolder(), "bosses.yml");
         if (!bossesFile.exists()) {
             try {
@@ -63,7 +93,7 @@ public class ConfigManager {
         bossesCfg = YamlConfiguration.loadConfiguration(bossesFile);
     }
 
-    private void initCitizens () {
+    private void initCitizens() {
         citizensFile = new File(plugin.getDataFolder(), "citizens.yml");
         if (!citizensFile.exists()) {
             try {
@@ -75,7 +105,7 @@ public class ConfigManager {
         citizensCfg = YamlConfiguration.loadConfiguration(citizensFile);
     }
 
-    private void initPOIs () {
+    private void initPOIs() {
         POIsFile = new File(plugin.getDataFolder(), "pointsOfInterest.yml");
         if (!POIsFile.exists()) {
             try {
@@ -113,63 +143,42 @@ public class ConfigManager {
         usersCfg = YamlConfiguration.loadConfiguration(usersFile);
     }
 
-    public UserLevels getUserLevels(Player player) {
-        if (usersCfg.contains(player.getUniqueId().toString())) {
-            int combatLvl = (int) usersCfg.get(player.getUniqueId() +".combatLvl");
-            int combatXp = (int) usersCfg.get(player.getUniqueId() +".combatXp");
-            int craftingLvl = (int) usersCfg.get(player.getUniqueId() +".combatLvl");
-            int craftingXp = (int) usersCfg.get(player.getUniqueId() +".combatXp");
-            int excavationLvl = (int) usersCfg.get(player.getUniqueId() +".excavationLvl");
-            int excavationXp = (int) usersCfg.get(player.getUniqueId() +".excavationXp");
-            int farmingLvl = (int) usersCfg.get(player.getUniqueId() +".fishingLvl");
-            int farmingXp = (int) usersCfg.get(player.getUniqueId() +".fishingXp");
-            int fishingLvl = (int) usersCfg.get(player.getUniqueId() +".fishingLvl");
-            int fishingXp = (int) usersCfg.get(player.getUniqueId() +".fishingXp");
-            int magicLvl = (int) usersCfg.get(player.getUniqueId() +".magicLvl");
-            int magicXp = (int) usersCfg.get(player.getUniqueId() +".magicXp");
-            int miningLvl = (int) usersCfg.get(player.getUniqueId() +".miningLvl");
-            int miningXp = (int) usersCfg.get(player.getUniqueId() +".miningXp");
-            int woodcuttingLvl = (int) usersCfg.get(player.getUniqueId() +".woodcuttingLvl");
-            int woodcuttingXp = (int) usersCfg.get(player.getUniqueId() +".woodcuttingXp");
+    public Activities getActivities() {
+        HashMap<String, SpleefArena> spleefArenas = new HashMap<>();
+        HashMap<String, PVPArena> pvpArenas = new HashMap<>();
 
-            return new UserLevels(combatXp, combatLvl, craftingXp, craftingLvl, excavationXp,
-                    excavationLvl, farmingXp, farmingLvl, fishingXp, fishingLvl, magicXp, magicLvl,
-                    miningXp, miningLvl, woodcuttingXp, woodcuttingLvl);
-        } else {
-            return null;
+        ConfigurationSection arenasSection = activitiesCfg.getConfigurationSection("arenas");
+
+        boolean hasSpleefArenas = arenasSection.contains("spleef");
+        if (hasSpleefArenas) {
+            ConfigurationSection spleefSection = arenasSection.getConfigurationSection("spleef");
+            Set<String> arenaNames = spleefSection.getKeys(false);
+
+            for (String arenaName : arenaNames) {
+                try {
+                    ConfigurationSection arenaSection = spleefSection.getConfigurationSection(arenaName);
+                    SpleefArena spleefArena = ActivityConfig.getSpleefArena(arenaSection, arenaName);
+
+                    if (spleefArena != null) spleefArenas.put(arenaName, spleefArena);
+                } catch (Exception ex) {
+                    Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Error when loading spleef arena: " + arenaName);
+                }
+
+            }
         }
+
+        Activities activities = new Activities(spleefArenas, pvpArenas);
+        return activities;
     }
 
-    public void saveUserLevels(Player player) {
-        User user = Server.getInstance().getUser(player.getUniqueId());
-        UserLevels userLvls = user.getLevels();
+    public static Location getLocationFromSection(ConfigurationSection configSection, World world) {
+        int x = configSection.getInt("x");
+        int y = configSection.getInt("y");
+        int z = configSection.getInt("z");
 
-        usersCfg.set(player.getUniqueId() +".combatLvl", userLvls.getCombatLvl());
-        usersCfg.set(player.getUniqueId() +".combatXp", userLvls.getCombatXp());
-        usersCfg.set(player.getUniqueId() +".craftingLvl", userLvls.getCraftingLvl());
-        usersCfg.set(player.getUniqueId() +".craftingXp", userLvls.getCraftingXp());
+        Location loc = new Location(world, x, y, z);
 
-        usersCfg.set(player.getUniqueId() +".excavationLvl", userLvls.getExcavationLvl());
-        usersCfg.set(player.getUniqueId() +".excavationXp", userLvls.getExcavationXp());
-        usersCfg.set(player.getUniqueId() +".fishingLvl", userLvls.getFarmingLvl());
-        usersCfg.set(player.getUniqueId() +".fishingXp", userLvls.getFarmingXp());
-
-        usersCfg.set(player.getUniqueId() +".fishingLvl", userLvls.getFishingLvl());
-        usersCfg.set(player.getUniqueId() +".fishingXp", userLvls.getFishingXp());
-        usersCfg.set(player.getUniqueId() +".magicLvl", userLvls.getMagicLvl());
-        usersCfg.set(player.getUniqueId() +".magicXp", userLvls.getMagicXp());
-
-        usersCfg.set(player.getUniqueId() +".miningLvl", userLvls.getMiningLvl());
-        usersCfg.set(player.getUniqueId() +".miningXp", userLvls.getMiningXp());
-        usersCfg.set(player.getUniqueId() +".woodcuttingLvl", userLvls.getWoodcuttingLvl());
-        usersCfg.set(player.getUniqueId() +".woodcuttingXp", userLvls.getWoodcuttingXp());
-
-        try {
-            usersCfg.save(usersFile);
-        } catch (IOException e) {
-            Bukkit.getServer().getConsoleSender().sendMessage(
-                    ChatColor.RED + "Could not save user data for player: " + player.getUniqueId() + " to config.");
-        }
+        return loc;
     }
 
     public Map<UUID, Citizen> getCitizens() {
@@ -369,6 +378,65 @@ public class ConfigManager {
 
     public void removeTeleportBlock(TeleportBlock tpBlock) {
         teleportsCfg.set(tpBlock.getName(), null);
+    }
+
+    public UserLevels getUserLevels(Player player) {
+        if (usersCfg.contains(player.getUniqueId().toString())) {
+            int combatLvl = (int) usersCfg.get(player.getUniqueId() +".combatLvl");
+            int combatXp = (int) usersCfg.get(player.getUniqueId() +".combatXp");
+            int craftingLvl = (int) usersCfg.get(player.getUniqueId() +".combatLvl");
+            int craftingXp = (int) usersCfg.get(player.getUniqueId() +".combatXp");
+            int excavationLvl = (int) usersCfg.get(player.getUniqueId() +".excavationLvl");
+            int excavationXp = (int) usersCfg.get(player.getUniqueId() +".excavationXp");
+            int farmingLvl = (int) usersCfg.get(player.getUniqueId() +".fishingLvl");
+            int farmingXp = (int) usersCfg.get(player.getUniqueId() +".fishingXp");
+            int fishingLvl = (int) usersCfg.get(player.getUniqueId() +".fishingLvl");
+            int fishingXp = (int) usersCfg.get(player.getUniqueId() +".fishingXp");
+            int magicLvl = (int) usersCfg.get(player.getUniqueId() +".magicLvl");
+            int magicXp = (int) usersCfg.get(player.getUniqueId() +".magicXp");
+            int miningLvl = (int) usersCfg.get(player.getUniqueId() +".miningLvl");
+            int miningXp = (int) usersCfg.get(player.getUniqueId() +".miningXp");
+            int woodcuttingLvl = (int) usersCfg.get(player.getUniqueId() +".woodcuttingLvl");
+            int woodcuttingXp = (int) usersCfg.get(player.getUniqueId() +".woodcuttingXp");
+
+            return new UserLevels(combatXp, combatLvl, craftingXp, craftingLvl, excavationXp,
+                    excavationLvl, farmingXp, farmingLvl, fishingXp, fishingLvl, magicXp, magicLvl,
+                    miningXp, miningLvl, woodcuttingXp, woodcuttingLvl);
+        } else {
+            return null;
+        }
+    }
+
+    public void saveUserLevels(Player player) {
+        User user = Server.getInstance().getUser(player.getUniqueId());
+        UserLevels userLvls = user.getLevels();
+
+        usersCfg.set(player.getUniqueId() +".combatLvl", userLvls.getCombatLvl());
+        usersCfg.set(player.getUniqueId() +".combatXp", userLvls.getCombatXp());
+        usersCfg.set(player.getUniqueId() +".craftingLvl", userLvls.getCraftingLvl());
+        usersCfg.set(player.getUniqueId() +".craftingXp", userLvls.getCraftingXp());
+
+        usersCfg.set(player.getUniqueId() +".excavationLvl", userLvls.getExcavationLvl());
+        usersCfg.set(player.getUniqueId() +".excavationXp", userLvls.getExcavationXp());
+        usersCfg.set(player.getUniqueId() +".fishingLvl", userLvls.getFarmingLvl());
+        usersCfg.set(player.getUniqueId() +".fishingXp", userLvls.getFarmingXp());
+
+        usersCfg.set(player.getUniqueId() +".fishingLvl", userLvls.getFishingLvl());
+        usersCfg.set(player.getUniqueId() +".fishingXp", userLvls.getFishingXp());
+        usersCfg.set(player.getUniqueId() +".magicLvl", userLvls.getMagicLvl());
+        usersCfg.set(player.getUniqueId() +".magicXp", userLvls.getMagicXp());
+
+        usersCfg.set(player.getUniqueId() +".miningLvl", userLvls.getMiningLvl());
+        usersCfg.set(player.getUniqueId() +".miningXp", userLvls.getMiningXp());
+        usersCfg.set(player.getUniqueId() +".woodcuttingLvl", userLvls.getWoodcuttingLvl());
+        usersCfg.set(player.getUniqueId() +".woodcuttingXp", userLvls.getWoodcuttingXp());
+
+        try {
+            usersCfg.save(usersFile);
+        } catch (IOException e) {
+            Bukkit.getServer().getConsoleSender().sendMessage(
+                    ChatColor.RED + "Could not save user data for player: " + player.getUniqueId() + " to config.");
+        }
     }
 
 }

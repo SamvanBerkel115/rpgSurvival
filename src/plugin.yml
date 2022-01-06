@@ -26,3 +26,13 @@ commands:
     usage: /<boss> link [bossName]
     permission: rpg.boss
     permission-message: You don't have <permission>
+  rpg:
+    description: General rpg survival plugin commands.
+    usage: /<rpg> tpworld Activities
+    permission: rpg.general
+    permission-message: You don't have <permission>
+  spleef:
+    description: Spleef commands.
+    usage: /spleef join <arenaName>
+    permission: rpg.general
+    permission-message: You don't have <permission>

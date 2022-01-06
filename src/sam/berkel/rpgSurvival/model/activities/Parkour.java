@@ -1,4 +1,4 @@
-package sam.berkel.rpgSurvival.model;
+package sam.berkel.rpgSurvival.model.activities;
 
 public class Parkour {
     private int startX;

@@ -5,10 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.plugin.java.JavaPlugin;
-import sam.berkel.rpgSurvival.commands.BossCommand;
-import sam.berkel.rpgSurvival.commands.CitizenCommand;
-import sam.berkel.rpgSurvival.commands.CutSceneCommand;
-import sam.berkel.rpgSurvival.commands.POICommand;
+import sam.berkel.rpgSurvival.commands.*;
 import sam.berkel.rpgSurvival.enchantments.Test;
 import sam.berkel.rpgSurvival.model.POIRunnable;
 
@@ -34,6 +31,8 @@ public class Main extends JavaPlugin {
         this.getCommand(POICommand.command).setExecutor(new POICommand());
         this.getCommand(CitizenCommand.command).setExecutor(new CitizenCommand());
         this.getCommand(BossCommand.command).setExecutor(new BossCommand());
+        this.getCommand(RpgCommand.command).setExecutor(new RpgCommand());
+        this.getCommand(SpleefCommand.command).setExecutor(new SpleefCommand());
 
         // Performs the check if players have exited or entered the radius of a POI.
         new POIRunnable().runTaskTimerAsynchronously(Main.getPlugin(Main.class), 0, 60);

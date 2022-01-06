@@ -1,12 +1,8 @@
-package sam.berkel.rpgSurvival.model.spleef;
+package sam.berkel.rpgSurvival.model.activities.spleef;
 
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import sam.berkel.rpgSurvival.model.Server;
-import sam.berkel.rpgSurvival.model.citizen.Citizen;
-import sam.berkel.rpgSurvival.model.user.User;
 
 import java.util.ArrayList;
 
