@@ -17,6 +17,10 @@ public class ActivityConfig {
         String worldName = arenaSection.getString("world");
         World world = Bukkit.getWorld(worldName);
 
+        // Get the lobby data.
+        Location lobbySpawnLocation = ConfigManager.getLocationFromSection(arenaSection.getConfigurationSection("lobbySpawn"), world);
+        int lobbyTimer = arenaSection.getInt("lobbyTimer");
+
         // Create all player spawn locations
         ArrayList<Location> spawnLocations = new ArrayList<>();
         ConfigurationSection playerSpawnSection = arenaSection.getConfigurationSection("playerSpawns");
@@ -34,7 +38,7 @@ public class ActivityConfig {
                 Location center = ConfigManager.getLocationFromSection(arenaSection.getConfigurationSection("center"), world);
                 int radius = arenaSection.getInt("radius");
 
-                return new RoundSpleefArena(arenaName, spawnLocations, numRounds, center, radius);
+                return new RoundSpleefArena(arenaName, lobbySpawnLocation, lobbyTimer, spawnLocations, numRounds, center, radius);
             default:
                 return null;
         }

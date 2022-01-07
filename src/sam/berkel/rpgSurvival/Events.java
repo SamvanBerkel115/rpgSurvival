@@ -3,6 +3,7 @@ package sam.berkel.rpgSurvival;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -16,7 +17,11 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import sam.berkel.rpgSurvival.mechanics.EntityHealth;
 import sam.berkel.rpgSurvival.model.*;
+import sam.berkel.rpgSurvival.model.activities.Activities;
+import sam.berkel.rpgSurvival.model.activities.ActivityArena;
+import sam.berkel.rpgSurvival.model.activities.ActivityPlayer;
 import sam.berkel.rpgSurvival.model.citizen.CheckLeftRunnable;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
 import sam.berkel.rpgSurvival.model.citizen.Response;
@@ -245,8 +250,29 @@ public class Events implements Listener {
         }
     }
 
-    //Entity events
+    @EventHandler
+    public  void onPlayerDeath(PlayerDeathEvent event ) {
+        Player player = event.getEntity();
+        Activities activities = Server.getInstance().getActivities();
 
+        ActivityPlayer actPlayer = activities.getPlayer(player.getUniqueId());
+        if (actPlayer != null) {
+            actPlayer.getArena().onPlayerDeath(actPlayer, event);
+        }
+    }
+
+    @EventHandler
+    public  void onPlayerRespawn(PlayerRespawnEvent event ) {
+        Player player = event.getPlayer();
+        Activities activities = Server.getInstance().getActivities();
+
+        ActivityPlayer actPlayer = activities.getPlayer(player.getUniqueId());
+        if (actPlayer != null) {
+            actPlayer.getArena().onPlayerRespawn(actPlayer, event);
+        }
+    }
+
+    //Entity events
     /**
      * Add combat xp if a player kills an entity.
      * @param event
@@ -287,6 +313,8 @@ public class Events implements Listener {
                     event.setCancelled(true);
                 }
             }
+
+            EntityHealth.setEntityHealthBar(victim);
         }
 
         Citizen citizen = server.getCitizen(victim.getUniqueId());

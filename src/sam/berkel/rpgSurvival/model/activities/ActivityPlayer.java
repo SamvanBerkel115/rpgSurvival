@@ -10,6 +10,9 @@ public class ActivityPlayer {
     Player player;
     ActivityArena arena;
     Location startLocation;
+    boolean inLobby;
+    boolean isPlaying;
+
     ItemStack helmet;
     ItemStack chestplate;
     ItemStack leggings;
@@ -23,17 +26,8 @@ public class ActivityPlayer {
         this.player = player;
         this.arena = arena;
         this.startLocation = player.getLocation();
-    }
+        this.inLobby = true;
 
-    public ActivityArena getArena() {
-        return arena;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void startActivity() {
         // Save all items in the player's inventory so we can restore it once the activity is over.
         PlayerInventory playerInventory = player.getInventory();
         helmet = playerInventory.getHelmet();
@@ -46,11 +40,42 @@ public class ActivityPlayer {
 
         playerInventory.clear();
 
+        gameMode = player.getGameMode();
         player.setGameMode(GameMode.ADVENTURE);
+    }
+
+    public ActivityArena getArena() {
+        return arena;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
+
+    public void toLobby() {
+        inLobby = true;
+        isPlaying = false;
+
+        player.teleport(arena.getLobbySpawn());
+    }
+
+    public void start() {
+        inLobby = false;
+        isPlaying = true;
     }
 
     public void leaveActivity() {
         PlayerInventory playerInventory = player.getInventory();
+
+        if (!player.isOnline()) return;
 
         player.teleport(startLocation);
 
@@ -60,8 +85,8 @@ public class ActivityPlayer {
         playerInventory.setBoots(boots);
         playerInventory.setItemInMainHand(mainHand);
         playerInventory.setItemInOffHand(offHand);
-        playerInventory.setContents(contents);
+        if (contents != null) playerInventory.setContents(contents);
 
-        player.setGameMode(gameMode);
+        if (gameMode != null) player.setGameMode(gameMode);
     }
 }

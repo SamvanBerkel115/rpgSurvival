@@ -3,6 +3,7 @@ package sam.berkel.rpgSurvival.model.activities;
 import net.minecraft.server.v1_15_R1.Activity;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import sam.berkel.rpgSurvival.Main;
 import sam.berkel.rpgSurvival.model.activities.PVPArena.PVPArena;
 import sam.berkel.rpgSurvival.model.activities.spleef.SpleefArena;
 
@@ -19,6 +20,10 @@ public class Activities {
         this.spleefArenas = spleefArenas;
         this.pvpArenas = pvpArenas;
         this.players = new HashMap<>();
+    }
+
+    public ActivityPlayer getPlayer(UUID uuid) {
+        return players.get(uuid);
     }
 
     public void join(ActivityType type, String name, Player player) {
@@ -43,6 +48,10 @@ public class Activities {
 
         ActivityPlayer joinedPlayer = foundArena.playerJoins(player);
         players.put(player.getUniqueId(), joinedPlayer);
+
+        if (foundArena.isFull()) {
+            foundArena.startCountdown();
+        }
     }
 
     public void leave(Player player) {
@@ -51,5 +60,24 @@ public class Activities {
         arena.playerLeaves(player);
 
         players.remove(player.getUniqueId());
+    }
+
+    public void cancel(ActivityType type, String name) {
+        ActivityArena foundArena = null;
+
+        switch (type) {
+            case SPLEEF:
+                foundArena = spleefArenas.get(name);
+                break;
+            case PVP_ARENA:
+                foundArena = pvpArenas.get(name);
+                break;
+        }
+
+        if (foundArena == null) {
+            return;
+        }
+
+        foundArena.cancel();
     }
 }

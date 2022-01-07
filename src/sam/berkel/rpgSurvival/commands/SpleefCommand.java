@@ -22,6 +22,8 @@ public class SpleefCommand implements CommandExecutor {
                 return joinCommand(commandSender, args);
             case "leave":
                 return leaveCommand(commandSender, args);
+            case "cancel":
+                return cancelCommand(commandSender, args);
             default:
                 break;
         }
@@ -41,7 +43,8 @@ public class SpleefCommand implements CommandExecutor {
         }
 
         String arenaName = args[1];
-        Server.getInstance().getActivities().join(ActivityType.SPLEEF, arenaName, (Player) commandSender);
+        Activities activities = Server.getInstance().getActivities();
+        activities.join(ActivityType.SPLEEF, arenaName, (Player) commandSender);
 
         return true;
     }
@@ -55,6 +58,19 @@ public class SpleefCommand implements CommandExecutor {
         Player player = (Player) commandSender;
 
         Server.getInstance().getActivities().leave(player);
+
+        return true;
+    }
+
+    private boolean cancelCommand(CommandSender commandSender, String[] args) {
+        if (args.length < 2) {
+            commandSender.sendMessage(ChatColor.RED + "Invalid spleef cancel command. Usage: /spleef cancel <arenaName>.");
+            return false;
+        }
+
+        String arenaName = args[1];
+        Activities activities = Server.getInstance().getActivities();
+        activities.cancel(ActivityType.SPLEEF, arenaName);
 
         return true;
     }
