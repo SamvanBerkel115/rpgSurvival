@@ -3,7 +3,6 @@ package sam.berkel.rpgSurvival;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -17,10 +16,9 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import sam.berkel.rpgSurvival.mechanics.EntityHealth;
+import sam.berkel.rpgSurvival.mechanics.RPGMonster;
 import sam.berkel.rpgSurvival.model.*;
 import sam.berkel.rpgSurvival.model.activities.Activities;
-import sam.berkel.rpgSurvival.model.activities.ActivityArena;
 import sam.berkel.rpgSurvival.model.activities.ActivityPlayer;
 import sam.berkel.rpgSurvival.model.citizen.CheckLeftRunnable;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
@@ -28,7 +26,6 @@ import sam.berkel.rpgSurvival.model.citizen.Response;
 import sam.berkel.rpgSurvival.model.citizen.State;
 import sam.berkel.rpgSurvival.model.teleport.TeleportBlock;
 import sam.berkel.rpgSurvival.model.user.User;
-import sam.berkel.rpgSurvival.model.user.UserLevels;
 import sam.berkel.rpgSurvival.model.user.UserState;
 import sam.berkel.rpgSurvival.skills.*;
 
@@ -288,6 +285,10 @@ public class Events implements Listener {
             int xp = Combat.getEntityXp(killedEntity);
             killerUser.addXp(xp, Main.Skill.COMBAT);
         }
+
+        if (killedEntity instanceof Monster) {
+            server.removeMonster(killedEntity.getUniqueId());
+        }
     }
 
     /**
@@ -314,7 +315,11 @@ public class Events implements Listener {
                 }
             }
 
-            EntityHealth.setEntityHealthBar(victim);
+            if (victim instanceof Monster) {
+                RPGMonster rpgMonster = server.getRpgMonster(victim.getUniqueId());
+
+                if (rpgMonster != null) rpgMonster.refreshName();
+            }
         }
 
         Citizen citizen = server.getCitizen(victim.getUniqueId());
@@ -364,6 +369,12 @@ public class Events implements Listener {
                 event.setCancelled(true);
                 break;
             }
+        }
+
+        if (!event.isCancelled() && entity instanceof Monster) {
+            RPGMonster rpgMonster = new RPGMonster((Monster) entity);
+
+            server.addMonster(rpgMonster);
         }
     }
 

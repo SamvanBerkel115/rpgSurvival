@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import sam.berkel.rpgSurvival.config.ConfigManager;
 import sam.berkel.rpgSurvival.Main;
+import sam.berkel.rpgSurvival.mechanics.RPGMonster;
 import sam.berkel.rpgSurvival.model.activities.Activities;
 import sam.berkel.rpgSurvival.model.bosses.Boss;
 import sam.berkel.rpgSurvival.model.citizen.Citizen;
@@ -25,6 +26,7 @@ public final class Server {
     private HashMap<Location, Boss> bossLocations;
     private ArrayList<PointOfInterest> POIs;
     private Activities activities;
+    private HashMap<UUID, RPGMonster> monsters;
 
     private Plugin plugin = Main.getPlugin(Main.class);
     private ConfigManager cfgManager;
@@ -35,6 +37,7 @@ public final class Server {
     // private constructor restricted to this class itself
     private Server() {
         users = new HashMap<>();
+        monsters = new HashMap<>();
 
         cfgManager = new ConfigManager();
 
@@ -67,6 +70,18 @@ public final class Server {
 
     public Activities getActivities() {
         return activities;
+    }
+
+    public void addMonster(RPGMonster rpgMonster) {
+        monsters.put(rpgMonster.getMonster().getUniqueId(), rpgMonster);
+    }
+
+    public void removeMonster(UUID uuid) {
+        monsters.remove(uuid);
+    }
+
+    public RPGMonster getRpgMonster(UUID uuid) {
+        return monsters.get(uuid);
     }
 
     /**
